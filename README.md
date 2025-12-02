@@ -52,11 +52,11 @@ pip install -r requirements.txt
 Set up Environment Variables:
 Create a .env file in the root directory (see .env.example) and add your API keys:
 
-SECRET_KEY=your_django_secret
+SECRET_KEY=loading
 DEBUG=True
-MPESA_CONSUMER_KEY=your_key
-MPESA_CONSUMER_SECRET=your_secret
-YOUTUBE_API_KEY=your_key
+MPESA_CONSUMER_KEY=loading
+MPESA_CONSUMER_SECRET=loading
+YOUTUBE_API_KEY=loading
 
 
 Run Migrations:
