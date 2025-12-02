@@ -31,6 +31,7 @@ Task Queue: Celery & Redis (for notifications)
 Clone the repository:
 
 git clone [(https://github.com/7ever/Nerdo.Africa.git)](https://github.com/7ever/Nerdo.Africa.git)
+
 cd Nerdo.Africa
 
 
