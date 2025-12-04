@@ -1,78 +1,136 @@
-🌍 **Nerdo.Africa**
+# Nerdo.Africa
 
-Nerdo.Africa is a comprehensive digital ecosystem designed to bridge the gap between African youth and the global freelancing economy. By leveraging AI-driven learning paths and integrating local financial infrastructures like M-Pesa, we are tackling youth unemployment directly.
+**Bridging the Gap Between Talent and Opportunity**
 
-🚀 **Key Features**
+Nerdo.Africa is a comprehensive platform designed to combat youth unemployment in Kenya and Africa. It connects freelance talent with digital jobs while solving the skills gap through AI-driven learning roadmaps. By aligning with the Government of Kenya's Ajira Digital framework, this project ensures that youth are not just finding jobs, but are verified, skilled, and digitally ready for the global market.
 
-- 🤖 AI Learning Roadmap: A "YouTube-style" recommendation engine that curates personalized video tutorials to take users from novice to expert based on market demand.
+## Key Features
 
-- 📋 Smart Job Board: Aggregates remote freelance gigs specifically available to African applicants, filtering out geo-blocked opportunities.
+### AI-Driven Skill Roadmaps
 
-- 📅 Opportunity Reminders: Automated notifications for upcoming job application windows, sponsorships, and funding programs.
+Unlike standard job boards, Nerdo doesn't just show you a job you aren't ready for.
 
-- 💳 M-Pesa Integration: Seamless payment processing for premium features and verifications using Safaricom's Daraja API.
+- **Tailored Learning**: Users select an interest (e.g., "Data Entry"), and the system uses the YouTube Data API to generate a curated "Zero to Hero" learning path.
+- **Progress Tracking**: Users can track their progress through video modules with personalized dashboards.
 
-- 🇰🇪 Civic Integration: Aligns with the Ajira Digital Program for verified digital skills certification.
+### GOK-Aligned Verification
 
-🛠 **Tech Stack**
+- **Simulated Ajira Validation**: The platform implements data structures compatible with the Ajira Digital Program to verify user identity and registration status.
+- **Trust Badges**: Verified users receive a "Verified Talent" badge, increasing their hireability and trustworthiness to employers.
 
-- Backend: Python 3.11+, Django 5.0, Django REST Framework
+### Intelligent Reminders (SMS)
 
-- Frontend: HTML5, CSS3, Bootstrap 5
+- **The 3-Day Rule**: The system automatically tracks application deadlines.
+- **SMS Notifications**: Powered by Africa's Talking API (Sandbox), users receive SMS alerts 3 days before a job closes, ensuring they never miss an opportunity.
 
-- Database: PostgreSQL (Production), SQLite (Dev)
+### Integrated Payment System
 
-- APIs: Safaricom Daraja (M-Pesa), Google YouTube Data API, GOK Ajira Digital frameworks
+- **M-Pesa Integration**: Users can pay for premium verification or expedited alerts using Lipa Na M-Pesa (STK Push) for seamless mobile money transactions.
 
-- Task Queue: Celery & Redis (for notifications)
+## Technical Stack
 
-📦 **Installation**
+- **Backend Framework**: Django (Python)
+- **Database**: MariaDB (Production-grade SQL)
+- **Frontend**: Bootstrap (Responsive Mobile-First UI)
+- **APIs Integrated**:
+  - Google YouTube Data API (for fetching learning content)
+  - Africa's Talking (for SMS notifications and alerts)
+  - Safaricom Daraja (for M-Pesa payments)
 
-**1. Clone the repository:**
+## Local Setup Instructions
 
-git clone [https://github.com/7ever/Nerdo.Africa.git](https://github.com/7ever/Nerdo.Africa.git)
+Follow these steps to run the project locally for development or grading.
 
-cd Nerdo.Africa
+### Prerequisites
 
+- Python 3.8 or higher
+- MariaDB (or XAMPP/WAMP) running and accessible
+- Git installed
 
-**2. Create and activate a virtual environment:**
+### Installation
 
-python -m venv venv
-# Windows
-venv\Scripts\activate
-# macOS/Linux
-source venv/bin/activate
+1. **Clone the Repository**
 
+   ```bash
+   git clone https://github.com/7ever/Nerdo.Africa.git
+   cd Nerdo.Africa
+   ```
 
-**3. Install dependencies:**
+2. **Create a Virtual Environment**
 
-pip install -r requirements.txt
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   ```
 
+3. **Install Dependencies**
 
-**4. Set up Environment Variables:**
-**- Create a .env file in the root directory and add your API keys:**
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-SECRET_KEY=loading
-DEBUG=True
-MPESA_CONSUMER_KEY=loading
-MPESA_CONSUMER_SECRET=loading
-YOUTUBE_API_KEY=loading
+4. **Configure Environment Variables**
 
+   Create a `.env` file in the root directory. You can leave the API keys blank for the initial setup; the app will run, but SMS and YouTube features will be disabled.
 
-**5. Run Migrations:**
+   ```env
+   SECRET_KEY=django-insecure-dev-key-placeholder
+   DEBUG=True
+   
+   # Database
+   DB_NAME=nerdo_db
+   DB_USER=root
+   DB_PASSWORD=
+   
+   # APIs (Leave blank for now)
+   AFRICASTALKING_USERNAME=sandbox
+   AFRICASTALKING_API_KEY=
+   YOUTUBE_API_KEY=
+   ```
 
-python manage.py migrate
+5. **Run Migrations**
 
+   ```bash
+   python manage.py migrate
+   ```
 
-**6. Start the Server:**
+6. **Start the Development Server**
 
-python manage.py runserver
+   ```bash
+   python manage.py runserver
+   ```
 
+   The application will be available at `http://localhost:8000`
 
-**🤝 Contributing**
+## Contributing
 
-We welcome contributions from the community! Please read our [CONTRIBUTING.md](https://github.com/7ever/Nerdo.Africa/blob/main/CONTRIBUTING.md) to get started.
+This is a final year academic project, but contributions are welcome!
 
-**📄 License**
+1. Fork the project
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a pull request
 
-This project is licensed under the BSD 3-Clause License - see the [LICENSE](https://github.com/7ever/Nerdo.Africa/blob/main/LICENSE) file for details.
+Please ensure your code follows Django best practices and includes appropriate documentation.
+
+### Reporting Bugs
+
+If you find a bug, please create a GitHub Issue. Include:
+
+- A clear, descriptive title
+- Steps to reproduce the issue
+- Expected vs. actual behavior
+- Screenshots if applicable
+
+### Suggesting Enhancements
+
+Have an idea for the AI Recommendation Engine or the Job Board? Open a Feature Request issue to discuss it before writing code.
+
+## License
+
+Distributed under the MIT License. See `LICENSE` file for more information.
+
+## Author
+
+Built for the Youth of Africa.
