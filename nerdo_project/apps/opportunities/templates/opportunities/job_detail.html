@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card shadow-sm p-4 mb-4">
+                <div class="mb-2">
+                    <span class="badge bg-success">{{ job.get_category_display }}</span>
+                    <span class="badge bg-dark">{{ job.get_job_type_display }}</span>
+                </div>
+                <h2 class="fw-bold">{{ job.title }}</h2>
+                <hr>
+                <h5>Description</h5>
+                <p class="lead text-muted">{{ job.description|linebreaks }}</p>
+                
+                <a href="{% url 'job_market' %}" class="btn btn-outline-secondary mt-3">Back to Market</a>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h4 class="text-success fw-bold text-center mb-3">KES {{ job.budget }}</h4>
+                    <ul class="list-group list-group-flush mb-3">
+                        <li class="list-group-item d-flex justify-content-between">
+                            <strong>Level:</strong> <span>{{ job.get_experience_level_display }}</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between">
+                            <strong>Deadline:</strong> <span class="text-danger">{{ job.deadline }}</span>
+                        </li>
+                    </ul>
+                    <div class="d-grid">
+                        <button class="btn btn-success btn-lg">Apply Now</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
