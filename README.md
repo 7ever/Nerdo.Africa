@@ -2,7 +2,7 @@
 
 **Bridging the Gap Between Talent and Opportunity**
 
-Nerdo.Africa is a comprehensive platform designed to combat youth unemployment in Kenya and Africa. It connects freelance talent with digital jobs while solving the skills gap through AI-driven learning roadmaps. By aligning with the Government of Kenya's Ajira Digital framework, this project ensures that youth are not just finding jobs, but are verified, skilled, and digitally ready for the global market.
+Nerdo.Africa is a comprehensive platform designed to combat youth unemployment in Kenya and across Africa. It connects freelance talent with digital jobs and addresses the skills gap using intuitive learning roadmaps, verification tools, and integrated communications and payments.
 
 ## Key Features
 
@@ -10,8 +10,8 @@ Nerdo.Africa is a comprehensive platform designed to combat youth unemployment i
 
 Unlike standard job boards, Nerdo doesn't just show you a job you aren't ready for.
 
-- **Tailored Learning**: Users select an interest (e.g., "Data Entry"), and the system uses the YouTube Data API to generate a curated "Zero to Hero" learning path.
-- **Progress Tracking**: Users can track their progress through video modules with personalized dashboards.
+-- **Tailored Learning**: Users select an interest (e.g., "Data Entry"), and the system uses the YouTube Data API to generate a curated "Zero to Hero" learning path made of quality video modules.
+- **Progress Tracking**: Users can track their progress through video modules with personalized dashboards and milestones.
 
 ### GOK-Aligned Verification
 
@@ -71,22 +71,22 @@ Follow these steps to run the project locally for development or grading.
 
 4. **Configure Environment Variables**
 
-   Create a `.env` file in the root directory. You can leave the API keys blank for the initial setup; the app will run, but SMS and YouTube features will be disabled.
+Create a `.env` file in the root directory.
 
-   ```env
-   SECRET_KEY=django-insecure-dev-key-placeholder
-   DEBUG=True
-   
-   # Database
-   DB_NAME=nerdo_db
-   DB_USER=root
-   DB_PASSWORD=
-   
-   # APIs (Leave blank for now)
-   AFRICASTALKING_USERNAME=sandbox
-   AFRICASTALKING_API_KEY=
-   YOUTUBE_API_KEY=
-   ```
+```env
+SECRET_KEY=django-insecure-dev-key-placeholder
+DEBUG=True
+
+# Database
+DB_NAME=nerdo_db
+DB_USER=root
+DB_PASSWORD=
+
+# APIs (Leave blank for now)
+AFRICASTALKING_USERNAME=sandbox
+AFRICASTALKING_API_KEY=
+YOUTUBE_API_KEY=
+```
 
 5. **Run Migrations**
 
@@ -94,7 +94,13 @@ Follow these steps to run the project locally for development or grading.
    python manage.py migrate
    ```
 
-6. **Start the Development Server**
+6. **Create a Superuser (optional)**
+
+   ```bash
+   python manage.py createsuperuser
+   ```
+
+7. **Start the Development Server**
 
    ```bash
    python manage.py runserver
@@ -127,10 +133,11 @@ If you find a bug, please create a GitHub Issue. Include:
 
 Have an idea for the AI Recommendation Engine or the Job Board? Open a Feature Request issue to discuss it before writing code.
 
+## Author
+- [@7ever](https://github.com/7ever)  
+  
 ## License
 
 Distributed under the MIT License. See [`LICENSE`](https://github.com/7ever/Nerdo.Africa/blob/main/LICENSE) file for more information.
-
-## Author
 
 Built for the Youth of Africa.
