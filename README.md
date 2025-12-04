@@ -129,7 +129,7 @@ Have an idea for the AI Recommendation Engine or the Job Board? Open a Feature R
 
 ## License
 
-Distributed under the MIT License. See `LICENSE` file for more information.
+Distributed under the MIT License. See [`LICENSE`](https://github.com/7ever/Nerdo.Africa/blob/main/LICENSE) file for more information.
 
 ## Author
 
