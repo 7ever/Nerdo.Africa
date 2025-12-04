@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+<div class="card p-4 shadow-sm">
+    <h3 class="mb-3">Post New Opportunity</h3>
+    <form method="POST">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <button type="submit" class="btn btn-success mt-3 w-100">Publish</button>
+    </form>
+</div>
+{% endblock %}

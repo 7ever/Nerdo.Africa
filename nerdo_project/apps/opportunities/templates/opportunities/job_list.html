@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="fw-bold">Latest Gigs</h1>
+            <p class="text-muted">Curated opportunities aligned with Ajira Digital standards.</p>
+        </div>
+        <a href="{% url 'create_job' %}" class="btn btn-success">Post a Job</a>
+    </div>
+
+    <div class="row">
+        {% for job in jobs %}
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-primary bg-opacity-10 text-primary">{{ job.get_category_display }}</span>
+                        <small class="text-muted">{{ job.created_at|timesince }} ago</small>
+                    </div>
+                    
+                    <h5 class="card-title fw-bold text-dark">{{ job.title }}</h5>
+                    <p class="card-text text-secondary small">{{ job.description|truncatewords:15 }}</p>
+                    
+                    <div class="mb-3">
+                        <span class="badge bg-light text-dark border">{{ job.get_job_type_display }}</span>
+                        <span class="badge bg-light text-dark border">{{ job.get_experience_level_display }}</span>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mt-auto">
+                        <h6 class="text-success fw-bold mb-0">KES {{ job.budget }}</h6>
+                        <a href="{% url 'job_detail' job.id %}" class="btn btn-sm btn-outline-success">View Details</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center py-5">
+            <p class="lead text-muted">No jobs posted yet. Be the first!</p>
+        </div>
+        {% endfor %}
+    </div>
+{% endblock %}
