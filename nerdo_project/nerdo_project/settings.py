@@ -41,6 +41,8 @@ INSTALLED_APPS = [
     'crispy_bootstrap5',
     'apps.opportunities',
     'apps.users',
+    'django_daraja',
+    'apps.billing',
 ]
 
 MIDDLEWARE = [
@@ -131,5 +133,11 @@ LOGOUT_REDIRECT_URL = 'login'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Email Configuration (Development Mode)
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# M-Pesa Configuration (Sandbox)
+MPESA_ENVIRONMENT = 'sandbox'
+MPESA_CONSUMER_KEY = config('MPESA_CONSUMER_KEY', default='')
+MPESA_CONSUMER_SECRET = config('MPESA_CONSUMER_SECRET', default='')
+MPESA_SHORTCODE = config('MPESA_SHORTCODE', default='174379') # Sandbox Default
+MPESA_EXPRESS_SHORTCODE = config('MPESA_EXPRESS_SHORTCODE', default='174379')
+MPESA_SHORTCODE_TYPE = 'paybill'
+MPESA_PASSKEY = config('MPESA_PASSKEY', default='bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919')
