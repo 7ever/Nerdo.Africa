@@ -19,5 +19,6 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('apps.opportunities.urls')), # Points root to our app
+    path('', include('apps.opportunities.urls')),
+    path('users/', include('apps.users.urls')), # Connects user routes
 ]

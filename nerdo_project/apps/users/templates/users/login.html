@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-5">
+        <div class="card shadow-sm border-0 bg-glass">
+            <div class="card-body p-4">
+                <h3 class="mb-3 text-center fw-bold">Welcome Back</h3>
+                <form method="POST">
+                    {% csrf_token %}
+                    {{ form|crispy }}
+                    
+                    <div class="d-grid mt-4">
+                        <button class="btn btn-success fw-bold" type="submit">Login</button>
+                    </div>
+                </form>
+                
+                <div class="d-flex justify-content-between mt-3 align-items-center">
+                    <!-- Forgot Password Link -->
+                    <a href="{% url 'password_reset' %}" class="text-decoration-none small text-muted">
+                        Forgot Password?
+                    </a>
+                    
+                    <!-- Register Link -->
+                    <small>New here? <a href="{% url 'register' %}" class="text-success fw-bold text-decoration-none">Join Now</a></small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
