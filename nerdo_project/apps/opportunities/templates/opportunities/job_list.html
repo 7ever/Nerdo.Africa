@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 gap-2">
         <div>
             <h1 class="fw-bold">Latest Gigs</h1>
             <p class="text-muted">Curated opportunities aligned with Ajira Digital standards.</p>
@@ -14,9 +14,9 @@
         <div class="col-md-6 col-lg-4 mb-4">
             <div class="card h-100 shadow-sm border-0">
                 <div class="card-body">
-                    <div class="d-flex justify-content-between mb-2">
+                    <div class="d-flex justify-content-between mb-2 gap-1">
                         <span class="badge bg-primary bg-opacity-10 text-primary">{{ job.get_category_display }}</span>
-                        <small class="text-muted">{{ job.created_at|timesince }} ago</small>
+                        <small class="text-muted start-100">{{ job.created_at|timesince }} ago</small>
                     </div>
                     
                     <h5 class="card-title fw-bold text-dark">{{ job.title }}</h5>

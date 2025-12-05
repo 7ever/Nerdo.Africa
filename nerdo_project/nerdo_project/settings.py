@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     'crispy_forms',
     'crispy_bootstrap5',
     'apps.opportunities',
+    'apps.opportunities',
+    'apps.users',
 ]
 
 MIDDLEWARE = [
@@ -122,5 +124,10 @@ STATIC_URL = 'static/'
 #Crispy Configuration
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
+
+# Authentication Settings
+LOGIN_REDIRECT_URL = 'job_market'
+LOGIN_URL = 'login'
+LOGOUT_REDIRECT_URL = 'login'
 
 

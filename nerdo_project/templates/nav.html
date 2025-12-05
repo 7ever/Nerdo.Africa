@@ -1,10 +1,26 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-success shadow">
+<nav class="navbar navbar-expand-lg navbar-light bg-glass shadow-sm mb-4">
     <div class="container">
-        <a class="navbar-brand fw-bold" href="{% url 'job_market' %}">Nerdo.Africa</a>
-        <div class="collapse navbar-collapse">
+        <!-- 1. Brand Logo -->
+        <a class="navbar-brand fw-bold text-success" href="{% url 'job_market' %}">Nerdo.Africa</a>
+
+        <!-- 2. Toggler Button -->
+        <!-- Added bg-success to make it pop on the glass background -->
+        <button class="navbar-toggler bg-success text-white" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- 3. Collapsible Menu Content -->
+        <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
-                <li class="nav-item"><a class="nav-link" href="{% url 'job_market' %}">Find Work</a></li>
-                <li class="nav-item ms-2"><a class="btn btn-light text-success" href="{% url 'create_job' %}">Post Job</a></li>
+                <li class="nav-item">
+                    <a class="nav-link active text-success fw-semibold" href="{% url 'job_market' %}">Find Work</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-success fw-semibold" href="#">Upskill</a>
+                </li>
+                <li class="nav-item ms-0">
+                    <a href="{% url 'create_job' %}" class="btn btn-light text-success fw-bold shadow-sm border-success">Post a Job</a>
+                </li>
             </ul>
         </div>
     </div>
