@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow border-success p-4 text-center bg-glass">
+            <h2 class="text-success mb-3">Get Verified ✅</h2>
+            <p>Unlock premium jobs and badges for just <strong>KES 1</strong>.</p>
+            <hr>
+            <p class="text-muted">Payment will be sent to: <strong>{{ user.profile.phone_number }}</strong></p>
+
+            <form method="POST">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-success btn-lg w-100">
+                    Pay with M-Pesa
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
