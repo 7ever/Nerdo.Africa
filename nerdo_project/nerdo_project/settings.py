@@ -40,7 +40,6 @@ INSTALLED_APPS = [
     'crispy_forms',
     'crispy_bootstrap5',
     'apps.opportunities',
-    'apps.opportunities',
     'apps.users',
 ]
 
