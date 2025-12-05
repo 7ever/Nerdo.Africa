@@ -129,4 +129,7 @@ LOGIN_REDIRECT_URL = 'job_market'
 LOGIN_URL = 'login'
 LOGOUT_REDIRECT_URL = 'login'
 
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# Email Configuration (Development Mode)
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

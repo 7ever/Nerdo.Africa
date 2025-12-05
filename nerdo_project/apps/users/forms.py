@@ -5,31 +5,51 @@ from .models import Profile
 
 class UserRegisterForm(UserCreationForm):
     email = forms.EmailField(required=True)
-    ajira_id = forms.CharField(max_length=20, required=True, help_text="Enter your Ajira ID (e.g. AJ-12345) for verification.")
+    # 1. Add Phone Number field (Required for OTP)
+    phone_number = forms.CharField(
+        max_length=15, 
+        required=True, 
+        help_text="Required for account recovery (e.g. +2547...)"
+    )
+    
+    ajira_id = forms.CharField(
+        max_length=20, 
+        required=False, 
+        help_text="Optional: Enter your Ajira ID to get the Verified Badge."
+    )
 
     class Meta:
         model = User
-        fields = ['username', 'email', 'ajira_id']
+        fields = ['username', 'email', 'phone_number', 'ajira_id']
 
     def clean_ajira_id(self):
-        """
-        Simulated GOK Validation API
-        In a real world, we would do: requests.get('api.ajira.go.ke/verify/...')
-        Here, we validate the format.
-        """
         ajira_id = self.cleaned_data.get('ajira_id')
-        if not ajira_id.upper().startswith('AJ-'):
-            raise forms.ValidationError("Invalid Ajira ID format. Must start with 'AJ-'")
+        if ajira_id and not ajira_id.upper().startswith('AJ-'):
+            raise forms.ValidationError("Invalid Ajira ID format. Must start with 'AJ-'.")
         return ajira_id
 
     def save(self, commit=True):
         user = super().save(commit=False)
         user.email = self.cleaned_data['email']
+        
         if commit:
             user.save()
-            # Update the auto-created profile
-            user.profile.ajira_id = self.cleaned_data['ajira_id']
-            # Grant verification badge if ID format is correct (Simulated)
-            user.profile.is_verified = True 
+            # Save Phone Number to Profile
+            user.profile.phone_number = self.cleaned_data.get('phone_number')
+            user.profile.ajira_id = self.cleaned_data.get('ajira_id')
+            
+            if user.profile.ajira_id:
+                user.profile.is_verified = True 
+            else:
+                user.profile.is_verified = False
+                
             user.profile.save()
         return user
+
+# 2. Form for Requesting the Reset (Enter Phone)
+class PasswordResetRequestForm(forms.Form):
+    phone_number = forms.CharField(max_length=15, label="Enter Registered Phone Number")
+
+# 3. Form for Verifying OTP
+class OTPVerifyForm(forms.Form):
+    otp_code = forms.CharField(max_length=6, label="Enter 6-Digit Code")

@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="card mb-3 border-0 shadow-sm">
+        <div class="card-body">
+            <div class="d-flex align-items-center">
+                <div>
+                    <h2 class="mb-0">{{ user.username }}</h2>
+                    <p class="text-muted mb-0">{{ user.email }}</p>
+                    {% if user.profile.is_verified %}
+                        <span class="badge bg-success mt-2">✅ GOK Verified Talent</span>
+                    {% else %}
+                        <span class="badge bg-warning text-dark mt-2">⚠️ Pending Verification</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-header bg-success text-white">Credentials</div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item"><strong>Ajira ID:</strong> {{ user.profile.ajira_id }}</li>
+                    <li class="list-group-item"><strong>Status:</strong> Verified</li>
+                </ul>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-header bg-light">My Applications</div>
+                <div class="card-body">
+                    <p class="text-muted">You haven't applied to any jobs yet.</p>
+                    <a href="{% url 'job_market' %}" class="btn btn-sm btn-outline-success">Find Work</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
