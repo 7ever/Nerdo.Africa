@@ -1,19 +1,32 @@
 {% extends "base.html" %}
+{% load crispy_forms_tags %}
+
 {% block content %}
 <div class="row justify-content-center">
-    <div class="col-md-6">
-        <div class="card shadow border-success p-4 text-center bg-glass">
-            <h2 class="text-success mb-3">Get Verified ✅</h2>
-            <p>Unlock premium jobs and badges for just <strong>KES 1</strong>.</p>
-            <hr>
-            <p class="text-muted">Payment will be sent to: <strong>{{ user.profile.phone_number }}</strong></p>
-
+    <div class="col-md-5">
+        <div class="card shadow border-success p-4 bg-glass">
+            <div class="text-center mb-4">
+                <h2 class="text-success fw-bold">Get Verified </h2>
+                <p class="text-muted">Unlock premium badges for <strong>KES 1</strong></p>
+            </div>
+            
             <form method="POST">
+                <!-- Security: CSRF Token is MANDATORY for POST requests -->
                 {% csrf_token %}
-                <button type="submit" class="btn btn-success btn-lg w-100">
-                    Pay with M-Pesa
-                </button>
+                
+                <!-- Display the Phone Input Field from PaymentForm -->
+                {{ form|crispy }}
+                
+                <div class="d-grid mt-4">
+                    <button type="submit" class="btn btn-success btn-lg fw-bold shadow-sm">
+                        Pay with M-Pesa
+                    </button>
+                </div>
             </form>
+            
+            <div class="text-center mt-3">
+                <small class="text-muted">You will receive an M-Pesa prompt on your phone.</small>
+            </div>
         </div>
     </div>
 </div>
