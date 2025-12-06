@@ -52,4 +52,12 @@ class PasswordResetRequestForm(forms.Form):
 
 # 3. Form for Verifying OTP
 class OTPVerifyForm(forms.Form):
-    otp_code = forms.CharField(max_length=6, label="Enter 6-Digit Code")
+    otp_code = forms.CharField(
+        max_length=6, 
+        label="Verification Code",
+        widget=forms.TextInput(attrs={
+            'class': 'form-control text-center text-spacing-4', 
+            'placeholder': '123456',
+            'autocomplete': 'off'
+        })
+    )
