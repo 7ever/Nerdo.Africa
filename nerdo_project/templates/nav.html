@@ -1,84 +1,114 @@
-<nav class="navbar navbar-expand-lg navbar-light bg-glass shadow-sm mb-4 sticky-top">
+<nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm mb-4 sticky-top">
     <div class="container">
-        <!-- 1. Brand Logo -->
+        <!-- 1. Minimalist Brand -->
         <a class="navbar-brand fw-bold text-success fs-4" href="{% url 'job_market' %}">
-            <i class="bi bi-asterisk"></i> Nerdo.Africa
+            <i class="bi bi-asterisk"></i> Nerdo
         </a>
 
-        <!-- 2. Toggler (Mobile Hamburger) -->
-        <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <!-- 2. Toggler -->
+        <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <span class="navbar-toggler-icon"></span>
         </button>
 
-        <!-- 3. Collapsible Menu -->
+        <!-- 3. Menu -->
         <div class="collapse navbar-collapse" id="navbarNav">
-            
-            <!-- Left Side: Main Navigation -->
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+
+            <!-- Left Actions -->
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0 ps-lg-5 ms-lg-5">
                 <li class="nav-item">
-                    <a class="nav-link active fw-semibold px-3" href="{% url 'job_market' %}">Find Work</a>
+                    <a class="nav-link active fw-medium px-3" href="{% url 'job_market' %}">Jobs</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link fw-semibold px-3" href="#">Upskill</a>
+                    <a class="nav-link fw-medium px-3" href="#">Campus</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link fw-medium px-3" href="#">Community</a>
                 </li>
             </ul>
 
-            <!-- Right Side: User Actions -->
+            <!-- Right Actions -->
             <div class="d-flex align-items-center gap-3">
-                
                 {% if user.is_authenticated %}
-                    <!-- LOGGED IN STATE -->
-                    
-                    <!-- Primary Action: Post Job -->
-                    <a href="{% url 'create_job' %}" class="btn btn-success rounded-pill px-4 shadow-sm fw-bold">
-                        <i class="bi bi-briefcase-fill me-2"></i>Post a Job
+
+                <div class="dropdown">
+                    <a class="nav-link dropdown-toggle d-flex align-items-center gap-2 text-dark fw-medium" href="#"
+                        role="button" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false">
+                        <!-- Avatar Circle -->
+                        <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center small"
+                            style="width: 32px; height: 32px;">
+                            {{ user.username|make_list|first|upper }}
+                        </div>
+                        <span class="d-none d-lg-inline">{{ user.username }}</span>
                     </a>
 
-                    <!-- Vertical Divider -->
-                    <div class="vr h-100 mx-2 text-secondary d-none d-lg-block"></div>
+                    <ul class="dropdown-menu dropdown-menu-lg-end border-0 shadow-lg mt-3 mx-0 p-2 rounded-4" style="min-width:180px;">
+                        <li>
+                            <a class="dropdown-item d-flex align-items-center p-3 bg-light bg-opacity-50 rounded-3" href="{% url 'profile' %}">
+                                <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 45px; height: 45px; font-size: 1.2rem;">
+                                    {{ user.username|make_list|first|upper }}
+                                </div>
+                                <div class="ms-2 overflow-hidden">
+                                    <h6 class="mb-0 fw-bold text-dark text-truncate">{{ user.username }}</h6>
+                                    <small class="text-muted text-truncate d-block" style="font-size: 0.85rem;">{{ user.email }}</small>
+                                </div>
+                            </a>
+                        </li>
 
-                    <!-- Profile Dropdown (Clean & Minimal) -->
-                    <div class="dropdown">
-                        <a class="nav-link dropdown-toggle d-flex align-items-center gap-2 text-dark fw-semibold" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <div class="bg-success bg-opacity-10 text-success rounded-circle d-flex align-items-center justify-content-center" style="width: 35px; height: 35px;">
-                                {{ user.username|make_list|first|upper }}
-                            </div>
-                            <span>{{ user.username }}</span>
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg mt-2 rounded-3 overflow-hidden">
-                            <li><a class="dropdown-item py-2" href="{% url 'profile' %}"><i class="bi bi-person me-2"></i>My Profile</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li>
-                                <form action="{% url 'logout' %}" method="post">
-                                    {% csrf_token %}
-                                    <button type="submit" class="dropdown-item py-2 text-danger">
-                                        <i class="bi bi-box-arrow-right me-2"></i>Logout
-                                    </button>
-                                </form>
-                            </li>
-                        </ul>
-                    </div>
+                        <!-- Premium Account Status Indicator -->
+                        {% if user.profile.is_verified %}
+                        <li class="px-3 py-1"><span class="badge bg-success py-2 fs-10"><i
+                                    class="bi bi-patch-check-fill me-1"></i> Premium Member</span></li>
+                        {% else %}
+                        <li class="px-3 py-1">
+                            <a href="{% url 'pay_premium' %}" class="btn btn-warning btn-sm fw-bold text-dark fs-10">
+                                <i class="bi bi-star-fill me-1"></i> Upgrade to Premium
+                            </a>
+                        </li>
+                        {% endif %}
+
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+
+                        <li>
+                            <a class="dropdown-item d-flex align-items-center rounded-3 py-2"
+                                href="{% url 'profile' %}">
+                                <!-- Profile SVG -->
+                                <svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium text-secondary"
+                                    style="width: 24px; height: 24px;" focusable="false" aria-hidden="true"
+                                    viewBox="0 0 24 24">
+                                    <path
+                                        d="M12 5.9c1.16 0 2.1.94 2.1 2.1s-.94 2.1-2.1 2.1S9.9 9.16 9.9 8s.94-2.1 2.1-2.1m0 9c2.97 0 6.1 1.46 6.1 2.1v1.1H5.9V17c0-.64 3.13-2.1 6.1-2.1M12 4C9.79 4 8 5.79 8 8s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4m0 9c-2.67 0-8 1.34-8 4v3h16v-3c0-2.66-5.33-4-8-4">
+                                    </path>
+                                </svg>
+                                <span class="ms-3 fw-medium">My Profile</span>
+                            </a>
+                        </li>
+
+                        <li>
+                            <form action="{% url 'logout' %}" method="post">
+                                {% csrf_token %}
+                                <button type="submit"
+                                    class="dropdown-item d-flex align-items-center rounded-3 py-2">
+                                    <!-- Logout SVG -->
+                                    <svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium ps-1"
+                                        style="width: 24px; height: 24px;" focusable="false" aria-hidden="true"
+                                        viewBox="0 0 24 24">
+                                        <path
+                                            d="m17 8-1.41 1.41L17.17 11H9v2h8.17l-1.58 1.58L17 16l4-4zM5 5h7V3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h7v-2H5z">
+                                        </path>
+                                    </svg>
+                                    <span class="ms-3 fw-medium">Log Out</span>
+                                </button>
+                            </form>
+                        </li>
+                    </ul>
+                </div>
 
                 {% else %}
-                    <!-- GUEST STATE -->
-                    
-                    <!-- Secondary CTA: Post Job (Subtle) -->
-                    <a href="{% url 'create_job' %}" class="text-decoration-none text-success fw-semibold d-none d-lg-block">
-                        Post a Job
-                    </a>
-
-                    <!-- Vertical Divider -->
-                    <div class="vr h-100 text-secondary d-none d-lg-block" style="height: 20px;"></div>
-
-                    <!-- Login Link (Minimal) -->
-                    <a href="{% url 'login' %}" class="text-dark text-decoration-none fw-semibold">
-                        Log In
-                    </a>
-
-                    <!-- Primary CTA: Register (Prominent) -->
-                    <a href="{% url 'register' %}" class="btn btn-dark rounded-pill px-4 fw-bold shadow-sm">
-                        Join Now
-                    </a>
+                <!-- Guest Actions -->
+                <a href="{% url 'login' %}" class="fw-bold text-dark text-decoration-none me-2">Log In</a>
+                <a href="{% url 'register' %}" class="btn btn-success rounded-pill px-4 btn-sm fw-bold">Sign Up</a>
                 {% endif %}
             </div>
         </div>

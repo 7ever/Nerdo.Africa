@@ -11,16 +11,18 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
 from pathlib import Path
+from dotenv import load_dotenv
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
+load_dotenv(BASE_DIR / '.env')
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-_*b7$n@)^dq1hq!wwh=qvvhdp@q48zypoedeh#xjic*!g@-b%d'
+SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -41,6 +43,8 @@ INSTALLED_APPS = [
     'crispy_bootstrap5',
     'apps.opportunities',
     'apps.users',
+    'django_daraja',
+    'apps.billing',
 ]
 
 MIDDLEWARE = [
@@ -131,5 +135,18 @@ LOGOUT_REDIRECT_URL = 'login'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Email Configuration (Development Mode)
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# M-Pesa Configuration (Sandbox)
+MPESA_ENVIRONMENT = 'sandbox'
+MPESA_CONSUMER_KEY = os.getenv('MPESA_CONSUMER_KEY')
+MPESA_CONSUMER_SECRET = os.getenv('MPESA_CONSUMER_SECRET')
+MPESA_SHORTCODE = os.getenv('MPESA_SHORTCODE')
+MPESA_EXPRESS_SHORTCODE = os.getenv('MPESA_EXPRESS_SHORTCODE')
+MPESA_SHORTCODE_TYPE = 'paybill'
+MPESA_PASSKEY = os.getenv('MPESA_PASSKEY')
+
+# Africa's Talking Configuration
+AFRICASTALKING_USERNAME = os.getenv('AFRICASTALKING_USERNAME', 'sandbox')
+AFRICASTALKING_API_KEY = os.getenv('AFRICASTALKING_API_KEY')
+
+# YouTube API
+YOUTUBE_API_KEY = os.getenv('YOUTUBE_API_KEY')
