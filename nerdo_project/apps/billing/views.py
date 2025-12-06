@@ -39,7 +39,7 @@ def pay_premium(request):
             account_reference = f'Nerdo_{clean_username}'[:12]
             transaction_desc = 'PremiumVerification' # No spaces to be safe
             
-            callback_url = 'http://127.0.0.1:8000/billing/callback' 
+            callback_url = 'http://mysite.com/billing/callback' 
 
             cl = MpesaClient()
             try:
