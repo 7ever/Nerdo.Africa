@@ -10,7 +10,7 @@ Nerdo.Africa is a comprehensive platform designed to combat youth unemployment i
 
 Unlike standard job boards, Nerdo doesn't just show you a job you aren't ready for.
 
--- **Tailored Learning**: Users select an interest (e.g., "Data Entry"), and the system uses the YouTube Data API to generate a curated "Zero to Hero" learning path made of quality video modules.
+- **Tailored Learning**: Users select an interest (e.g., "Data Entry"), and the system uses the YouTube Data API to generate a curated "Zero to Hero" learning path made of quality video modules.
 - **Progress Tracking**: Users can track their progress through video modules with personalized dashboards and milestones.
 
 ### GOK-Aligned Verification
