@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-5">
+        <div class="card shadow-sm border-0 bg-glass text-center p-4">
+            <div class="mb-4 text-success">
+                <i class="bi bi-shield-lock-fill" style="font-size: 3rem;"></i>
+            </div>
+            <h3 class="mb-2 fw-bold">Verify Phone Number</h3>
+            <p class="text-muted small mb-4">We sent a 6-digit code to your phone to confirm your identity.</p>
+
+            <form method="POST">
+                {% csrf_token %}
+                {{ form|crispy }}
+
+                <div class="d-grid mt-4">
+                    <button class="btn btn-success fw-bold" type="submit">Verify & Login</button>
+                </div>
+            </form>
+
+            <div class="mt-3">
+                <small class="text-muted">Didn't receive it? <a href="{% url 'register' %}" class="text-decoration-none">Try again</a></small>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
