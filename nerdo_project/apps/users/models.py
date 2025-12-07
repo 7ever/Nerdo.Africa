@@ -5,24 +5,25 @@ from django.dispatch import receiver
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    
+
     # Identity
     ajira_id = models.CharField(max_length=20, blank=True, help_text="e.g., AJ-123456")
     phone_number = models.CharField(max_length=15, blank=True)
-    
-    # OTP & Verification
+
+    # NEW: OTP Fields
     otp_code = models.CharField(max_length=6, blank=True, null=True)
     otp_created_at = models.DateTimeField(auto_now=True)
-    
+
     # Status Flags
-    is_verified = models.BooleanField(default=False) # Ajira verified
-    is_phone_verified = models.BooleanField(default=False) # Phone Verified
-    
+    is_verified = models.BooleanField(default=False) 
+    is_phone_verified = models.BooleanField(default=False) # New flag
+
     bio = models.TextField(blank=True, max_length=500)
-    
+
     def __str__(self):
         return f"{self.user.username}'s Profile"
 
+# Signals
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
