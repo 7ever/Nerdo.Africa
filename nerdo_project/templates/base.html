@@ -1,17 +1,97 @@
 <!DOCTYPE html>
+{% load static %}
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nerdo.Africa</title>
+    <title>Nerdo.Africa | {% block title %}Home{% endblock %}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <style>
+        /* Modern Gradient Background */
+        body { 
+            display: flex; 
+            flex-direction: column; 
+            min-height: 100vh; 
+            background: linear-gradient(135deg, #e0f7fa 0%, #d9ffbe 50%, #4dd0e1 100%);
+            background-attachment: fixed;
+        }
+        main { flex: 1; }
+
+        /* Glassmorphism Class */
+        .bg-glass {
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Modern Card Styling */
+        .card { 
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            border-radius: 16px;
+            transition: transform 0.2s, box-shadow 0.2s; 
+        }
+    </style>
 </head>
-<body class="bg-light">
+<body>
+
     {% include 'nav.html' %}
-    <div class="container my-5">
+
+    <main class="container my-5">
+        
+        {% if messages %}
+            <div class="row justify-content-center mb-4">
+                <div class="col-md-8">
+                    {% for message in messages %}
+                        <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show border-0 shadow-sm rounded-3 d-flex align-items-center p-3" role="alert">
+                            
+                            <!-- Dynamic Icons based on Message Type -->
+                            <div class="me-3 fs-4">
+                                {% if message.tags == 'success' %}
+                                    <i class="bi bi-check-circle-fill"></i>
+                                {% elif message.tags == 'error' %}
+                                    <i class="bi bi-x-octagon-fill"></i>
+                                {% elif message.tags == 'warning' %}
+                                    <i class="bi bi-exclamation-triangle-fill"></i>
+                                {% else %}
+                                    <i class="bi bi-info-circle-fill"></i>
+                                {% endif %}
+                            </div>
+
+                            <div class="flex-grow-1">
+                                <strong>
+                                    {% if message.tags == 'success' %}Success!
+                                    {% elif message.tags == 'error' %}Error!
+                                    {% elif message.tags == 'warning' %}Attention:
+                                    {% else %}Info:
+                                    {% endif %}
+                                </strong> 
+                                {{ message }}
+                            </div>
+                            
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+
         {% block content %}
         {% endblock %}
-    </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-glass text-dark text-center py-2 mt-4">
+        <div class="container">
+            <p class="mb-0 small">Copyright &copy; 2025 Nerdo.Africa. Empowering Youth via Digital Gigs.</p>
+        </div>
+    </footer>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

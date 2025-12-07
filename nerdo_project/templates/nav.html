@@ -2,7 +2,7 @@
     <div class="container">
         <!-- 1. Minimalist Brand -->
         <a class="navbar-brand fw-bold text-success fs-4" href="{% url 'job_market' %}">
-            <i class="bi bi-asterisk"></i> Nerdo
+            <i class="bi"></i>Nerdo
         </a>
 
         <!-- 2. Toggler -->
@@ -56,12 +56,12 @@
 
                         <!-- Premium Account Status Indicator -->
                         {% if user.profile.is_verified %}
-                        <li class="px-3 py-1"><span class="badge bg-success py-2 fs-10"><i
-                                    class="bi bi-patch-check-fill me-1"></i> Premium Member</span></li>
+                        <li class="px-3 py-1"><span class="badge bg-success py-2 small"><i
+                                    class="bi me-1"></i> Premium Member</span></li>
                         {% else %}
                         <li class="px-3 py-1">
-                            <a href="{% url 'pay_premium' %}" class="btn btn-warning btn-sm fw-bold text-dark fs-10">
-                                <i class="bi bi-star-fill me-1"></i> Upgrade to Premium
+                            <a href="{% url 'pay_premium' %}" class="btn btn-warning btn-sm fw-bold text-dark small">
+                                <i class="bi me-1"></i> Upgrade to Premium
                             </a>
                         </li>
                         {% endif %}
