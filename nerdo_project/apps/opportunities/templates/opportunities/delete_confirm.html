@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow-sm border-danger p-4 text-center bg-glass">
+            <div class="mb-3 text-danger">
+                <i class="bi bi-exclamation-circle-fill" style="font-size: 3rem;"></i>
+            </div>
+            
+            <h3 class="text-danger fw-bold">Delete Job?</h3>
+            <p class="lead">Are you sure you want to delete <strong>"{{ item.title }}"</strong>?</p>
+            <p class="text-muted small">This action cannot be undone.</p>
+            
+            <form method="POST">
+                {% csrf_token %}
+                <div class="d-flex justify-content-center gap-3 mt-4">
+                    <a href="{% url 'job_detail' item.id %}" class="btn btn-outline-secondary rounded-pill px-4">Cancel</a>
+                    <button type="submit" class="btn btn-danger rounded-pill px-4 fw-bold">Yes, Delete</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
