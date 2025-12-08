@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex align-items-center mb-4">
+        <a href="{% url 'learning_home' %}" class="btn btn-outline-secondary rounded-pill me-3">
+            <i class="bi bi-arrow-left"></i> Back
+        </a>
+        <div>
+            <h2 class="fw-bold mb-0">Learning Path: <span class="text-success">{{ skill }}</span></h2>
+            <small class="text-muted">Curated playlists from YouTube</small>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        {% for playlist in playlists %}
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 border-0 shadow-sm overflow-hidden bg-white">
+                <!-- Thumbnail -->
+                <img src="{{ playlist.thumbnail }}" class="card-img-top" alt="{{ playlist.title }}"
+                    style="height: 180px; object-fit: cover;">
+
+                <div class="card-body d-flex flex-column">
+                    <h6 class="fw-bold mb-2">{{ playlist.title|truncatechars:50 }}</h6>
+                    <small class="text-muted mb-3"><i class="bi bi-youtube text-danger me-1"></i> {{ playlist.channel
+                        }}</small>
+                    <p class="small text-secondary mb-3">{{ playlist.description|truncatechars:100 }}</p>
+
+                    <a href="https://www.youtube.com/playlist?list={{ playlist.playlist_id }}" target="_blank"
+                        class="btn btn-modern btn-sm w-100 mt-auto fw-bold py-2">
+                        Start Course <i class="bi bi-box-arrow-up-right ms-1"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center py-5">
+            <div class="alert alert-warning border-0 shadow-sm rounded-4">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i> No roadmaps found. Check your API Key or try a
+                different skill.
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
