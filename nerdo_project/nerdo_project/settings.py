@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'apps.users',
     'django_daraja',
     'apps.billing',
+    'apps.learning',
 ]
 
 MIDDLEWARE = [
@@ -155,4 +156,20 @@ AFRICASTALKING_USERNAME = os.getenv('AFRICASTALKING_USERNAME')
 AFRICASTALKING_API_KEY = os.getenv('AFRICASTALKING_API_KEY')
 
 # YouTube API
-YOUTUBE_API_KEY = os.getenv('YOUTUBE_API_KEY')
+YOUTUBE_API_KEYS = [
+    os.getenv('YOUTUBE_API_KEY1'),
+    os.getenv('YOUTUBE_API_KEY2'),
+    os.getenv('YOUTUBE_API_KEY3'),
+]
+
+# Gemini Generative AI
+GEMINI_API_KEY = os.getenv('GEMINI_API_KEY', '')
+CACHE_TIMEOUT = int(os.getenv('CACHE_TIMEOUT', 86400))
+
+# Cache Configuration (LocMemCache for dev)
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'unique-snowflake',
+    }
+}

@@ -1,0 +1,293 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="learning-wrapper">
+    <!-- background ambient glow -->
+    <div class="ambient-glow"></div>
+
+    <div class="container py-5 position-relative z-1">
+
+        <!-- HEADER / COMMAND CENTER -->
+        <div class="row justify-content-center mb-5">
+            <div class="col-lg-10 text-center">
+                <div class="mb-4">
+                    <span
+                        class="badge bg-white-10 text-success border border-success-subtle rounded-pill px-3 py-2 mb-3 fw-light tracking-wide">
+                        <i class="bi bi-stars me-1"></i> AI-POWERED LEARNING
+                    </span>
+                    <h1 class="display-3 fw-bold text-dark mb-2 tracking-tight">
+                        What will you <span class="text-gradient">master</span> today?
+                    </h1>
+                    <p class="lead text-muted fw-light">
+                        Curated learning paths tailored to your goals.
+                    </p>
+                </div>
+
+                <!-- Main Search Interface -->
+                <div class="command-center mx-auto">
+                    <form method="POST" action="{% url 'search_roadmap' %}">
+                        {% csrf_token %}
+                        <div class="search-box-wrapper p-2 bg-white rounded-5 shadow-lg d-flex align-items-center">
+                            <span class="ps-3 text-muted"><i class="bi bi-search fs-4"></i></span>
+                            <input type="text" name="topic"
+                                class="form-control border-0 bg-transparent shadow-none fs-5 py-3"
+                                placeholder="Type a skill (e.g., 'React', 'Data Science')..." required autofocus>
+
+                            <!-- Options Trigger (Mobile/Desktop) -->
+                            <div class="d-flex gap-2 pe-2">
+                                <select name="skill_level" class="form-select border-0 bg-light-subtle rounded-pill"
+                                    style="width: auto; cursor: pointer;">
+                                    {% for level, label in skill_levels %}
+                                    <option value="{{ level }}">{{ label }}</option>
+                                    {% endfor %}
+                                </select>
+                                <select name="duration"
+                                    class="form-select border-0 bg-light-subtle rounded-pill d-none d-md-block"
+                                    style="width: auto; cursor: pointer;">
+                                    {% for weeks, label in durations %}
+                                    <option value="{{ weeks }}">{{ label }}</option>
+                                    {% endfor %}
+                                </select>
+                                <button type="submit" class="btn btn-dark rounded-circle"
+                                    style="width: 50px; height: 50px;">
+                                    <i class="bi bi-arrow-right"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- BENTO GRID CATEGORIES -->
+        <div class="row g-4 mb-5">
+            <div class="col-12 text-center mb-2">
+                <p class="small text-uppercase tracking-widest text-muted">Trending Pathways</p>
+            </div>
+
+            <!-- Large Feature Card -->
+            <div class="col-md-6 col-lg-5">
+                <form action="{% url 'search_roadmap' %}" method="POST" class="h-100">
+                    {% csrf_token %}
+                    <input type="hidden" name="topic" value="Python for Data Science">
+                    <input type="hidden" name="skill_level" value="beginner">
+                    <input type="hidden" name="duration" value="12">
+                    <button type="submit"
+                        class="card bento-card h-100 w-100 text-start border-0 p-4 bg-glass-dark text-white position-relative overflow-hidden">
+                        <div class="blob blob-1"></div>
+                        <div class="position-relative z-1 d-flex flex-column h-100 justify-content-end">
+                            <i class="bi bi-code-square fs-1 mb-3 text-success-light"></i>
+                            <h3 class="fw-bold mb-1">Data Science</h3>
+                            <p class="opacity-75 small mb-0">Navigate the data revolution with Python & AI.</p>
+                        </div>
+                    </button>
+                </form>
+            </div>
+
+            <!-- Grid of smaller cards -->
+            <div class="col-md-6 col-lg-7">
+                <div class="row g-4 h-100">
+                    <!-- Web Dev -->
+                    <div class="col-sm-6">
+                        <form action="{% url 'search_roadmap' %}" method="POST" class="h-100">
+                            {% csrf_token %}
+                            <input type="hidden" name="topic" value="Full Stack Web Development">
+                            <input type="hidden" name="skill_level" value="beginner">
+                            <input type="hidden" name="duration" value="12">
+                            <button type="submit"
+                                class="card bento-card h-100 w-100 text-start border-0 p-4 bg-glass position-relative">
+                                <i class="bi bi-window-stack fs-2 text-primary mb-auto"></i>
+                                <div>
+                                    <h5 class="fw-bold mb-1">Web Dev</h5>
+                                    <span class="badge bg-primary-subtle text-primary rounded-pill">Popular</span>
+                                </div>
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Design -->
+                    <div class="col-sm-6">
+                        <form action="{% url 'search_roadmap' %}" method="POST" class="h-100">
+                            {% csrf_token %}
+                            <input type="hidden" name="topic" value="UI/UX Design">
+                            <input type="hidden" name="skill_level" value="beginner">
+                            <input type="hidden" name="duration" value="8">
+                            <button type="submit"
+                                class="card bento-card h-100 w-100 text-start border-0 p-4 bg-glass position-relative">
+                                <i class="bi bi-palette fs-2 text-danger mb-auto"></i>
+                                <div>
+                                    <h5 class="fw-bold mb-1">UI/UX Design</h5>
+                                    <span class="small text-muted">Creative Flow</span>
+                                </div>
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Blockchain -->
+                    <div class="col-sm-6">
+                        <form action="{% url 'search_roadmap' %}" method="POST" class="h-100">
+                            {% csrf_token %}
+                            <input type="hidden" name="topic" value="Blockchain Development">
+                            <input type="hidden" name="skill_level" value="intermediate">
+                            <button type="submit"
+                                class="card bento-card h-100 w-100 text-start border-0 p-4 bg-glass position-relative">
+                                <i class="bi bi-currency-bitcoin fs-2 text-warning mb-auto"></i>
+                                <div>
+                                    <h5 class="fw-bold mb-1">Web3</h5>
+                                    <span class="small text-muted">Future Tech</span>
+                                </div>
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Marketing -->
+                    <div class="col-sm-6">
+                        <form action="{% url 'search_roadmap' %}" method="POST" class="h-100">
+                            {% csrf_token %}
+                            <input type="hidden" name="topic" value="Digital Marketing">
+                            <button type="submit"
+                                class="card bento-card h-100 w-100 text-start border-0 p-4 bg-glass position-relative">
+                                <i class="bi bi-graph-up-arrow fs-2 text-info mb-auto"></i>
+                                <div>
+                                    <h5 class="fw-bold mb-1">Marketing</h5>
+                                    <span class="small text-muted">Growth Hacks</span>
+                                </div>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RECENT ACTIVITY STRIP -->
+        {% if learning_paths %}
+        <div class="glass-strip p-4 rounded-4 mt-5">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <h5 class="fw-bold mb-0">Continue Learning</h5>
+                <a href="{% url 'learning_history' %}" class="btn btn-sm btn-outline-dark rounded-pill px-3">View
+                    All</a>
+            </div>
+            <div class="d-flex gap-3 overflow-auto pb-2" style="scrollbar-width: none;">
+                {% for path in learning_paths %}
+                <a href="{% url 'roadmap_view_id' path.id %}"
+                    class="card text-decoration-none text-dark border-0 bg-white shadow-sm flex-shrink-0"
+                    style="width: 280px; transition: transform 0.2s;">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div class="rounded-circle bg-success-subtle p-2 text-success">
+                                <i class="bi bi-play-fill"></i>
+                            </div>
+                            <span class="badge bg-light text-muted border">{{ path.duration }}w</span>
+                        </div>
+                        <h6 class="fw-bold text-truncate mb-1">{{ path.topic }}</h6>
+                        <small class="text-muted">{{ path.skill_level|title }}</small>
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+    /* Scope styles to avoid breaking global base.html */
+
+    .learning-wrapper {
+        --glass-bg: rgba(255, 255, 255, 0.6);
+        --glass-border: rgba(255, 255, 255, 0.8);
+        --blur: 20px;
+    }
+
+    .ambient-glow {
+        position: fixed;
+        top: 20%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 600px;
+        height: 600px;
+        background: radial-gradient(circle, rgba(16, 185, 129, 0.15) 0%, rgba(255, 255, 255, 0) 70%);
+        z-index: 0;
+        pointer-events: none;
+    }
+
+    .bg-white-10 {
+        background: rgba(255, 255, 255, 0.5);
+        backdrop-filter: blur(5px);
+    }
+
+    .text-gradient {
+        background: linear-gradient(135deg, #10b981, #064e3b);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .command-center {
+        max-width: 700px;
+        position: relative;
+        z-index: 10;
+        transition: transform 0.3s;
+    }
+
+    .command-center:focus-within {
+        transform: scale(1.02);
+    }
+
+    .bento-card {
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        cursor: pointer;
+        backdrop-filter: blur(var(--blur));
+        border: 1px solid rgba(255, 255, 255, 0.5);
+    }
+
+    .bento-card:hover {
+        transform: translateY(-5px) scale(0.98);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.05);
+    }
+
+    .bg-glass {
+        background: rgba(255, 255, 255, 0.6);
+    }
+
+    .bg-glass-dark {
+        background: linear-gradient(145deg, #1f2937, #111827);
+    }
+
+    .text-success-light {
+        color: #6ee7b7;
+    }
+
+    .blob {
+        position: absolute;
+        filter: blur(40px);
+        opacity: 0.4;
+    }
+
+    .blob-1 {
+        top: -50%;
+        right: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, #10b981 0%, transparent 60%);
+    }
+
+    .tracking-wide {
+        letter-spacing: 0.1em;
+    }
+
+    .tracking-widest {
+        letter-spacing: 0.2em;
+    }
+
+    .tracking-tight {
+        letter-spacing: -0.03em;
+    }
+
+    .glass-strip {
+        background: rgba(255, 255, 255, 0.4);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.5);
+    }
+</style>
+{% endblock %}

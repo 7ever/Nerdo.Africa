@@ -106,6 +106,7 @@ def mpesa_callback(request):
 
                 user_profile = transaction.user.profile
                 user_profile.is_verified = True
+                user_profile.is_premium = True
                 user_profile.save()
             else:
                 transaction.status = 'Failed'
