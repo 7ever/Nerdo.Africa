@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth import login, logout
 from django.contrib.auth.forms import SetPasswordForm
@@ -7,10 +7,12 @@ from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
 from django import forms
 from django.db.models import Q
-from .forms import UserRegisterForm, OTPVerifyForm
+from .forms import UserRegisterForm, OTPVerifyForm, ProfileUpdateForm
 from .models import Profile
+from apps.opportunities.models import Job, Application 
 from .utils import generate_otp, send_otp_sms
 import random
+from django.db.models import Count
 
 # === LOCAL FORMS FOR PASSWORD RESET FLOW ===
 class IdentifyUserForm(forms.Form):
@@ -40,11 +42,17 @@ def register(request):
     if request.method == 'POST':
         form = UserRegisterForm(request.POST)
         if form.is_valid():
+            # Basic User Data
             username = form.cleaned_data['username']
             email = form.cleaned_data['email']
+            password = form.cleaned_data['password1'] 
+            
+            # Additional Fields
+            first_name = form.cleaned_data['first_name']
+            last_name = form.cleaned_data['last_name']
             phone = form.cleaned_data['phone_number']
             ajira_id = form.cleaned_data['ajira_id']
-            password = form.cleaned_data['password1'] 
+            role = form.cleaned_data['role']
             
             # --- UNIQUE PHONE CHECK (Manual enforcement in View) ---
             if Profile.objects.filter(phone_number=phone).exists():
@@ -57,8 +65,11 @@ def register(request):
                 'username': username,
                 'email': email,
                 'password': password,
+                'first_name': first_name,
+                'last_name': last_name,
                 'phone_number': phone,
-                'ajira_id': ajira_id
+                'ajira_id': ajira_id,
+                'role': role
             }
             request.session['reg_otp'] = otp
             
@@ -87,19 +98,31 @@ def verify_otp(request):
             
             if code == reg_otp:
                 try:
+                    # Create User with First/Last Name
                     user = User.objects.create_user(
                         username=reg_data['username'],
                         email=reg_data['email'],
-                        password=reg_data['password']
+                        password=reg_data['password'],
+                        first_name=reg_data['first_name'],
+                        last_name=reg_data['last_name']
                     )
                     
+                    # Update Profile
                     user.profile.phone_number = reg_data['phone_number']
                     user.profile.ajira_id = reg_data['ajira_id']
+                    user.profile.role = reg_data['role']
                     user.profile.is_phone_verified = True
                     
                     if reg_data['ajira_id']:
                         user.profile.is_verified = True
-                        
+                    
+                    # Handle Employer Status
+                    if reg_data['role'] == 'employer':
+                        user.profile.is_employer_verified = False # Pending Admin Approval
+                        messages.warning(request, "Account created! As an employer, your account requires Admin approval before posting jobs.")
+                    else:
+                        messages.success(request, "Account created successfully!")
+
                     user.profile.save()
                     
                     login(request, user)
@@ -107,8 +130,10 @@ def verify_otp(request):
                     del request.session['reg_data']
                     del request.session['reg_otp']
                     
-                    messages.success(request, "Account created successfully!")
-                    return redirect('job_market')
+                    if user.profile.role == 'employer':
+                        return redirect('employer_dashboard')
+                    else:
+                        return redirect('profile') # Go to User Dashboard
 
                 except IntegrityError:
                     messages.error(request, "Username or email already taken.")
@@ -123,11 +148,65 @@ def verify_otp(request):
 
 @login_required
 def profile(request):
-    return render(request, 'users/profile.html')
+    """
+    User Dashboard for Job Seekers.
+    Displays:
+    - Profile Stats/Edit
+    - My Applications
+    - Recommended Jobs
+    """
+    user = request.user
+    
+    # Redirect Employers to their dashboard
+    if hasattr(user, 'profile') and user.profile.role == 'employer':
+        return redirect('employer_dashboard')
+
+    if request.method == 'POST':
+        p_form = ProfileUpdateForm(request.POST, request.FILES, instance=user.profile, user=user)
+        if p_form.is_valid():
+            p_form.save()
+            messages.success(request, "Profile updated successfully!")
+            return redirect('profile')
+    else:
+        p_form = ProfileUpdateForm(instance=user.profile, user=user)
+
+    # 1. Get User's Applications
+    my_applications = Application.objects.filter(applicant=user).select_related('job').order_by('-applied_at')
+
+    # 2. Recommended Jobs (Logic: Same category as user's last application, or just recent jobs)
+    # Simple logic: Latest 3 jobs matching a default category or just latest 3
+    # For now, let's just show latest 3 jobs. 
+    # Improvement: Filter by skills/category if we had that data in Profile.
+    recommended_jobs = Job.objects.filter(is_approved=True).exclude(applications__applicant=user).select_related('author').order_by('-created_at')[:3]
+
+    context = {
+        'p_form': p_form,
+        'my_applications': my_applications,
+        'recommended_jobs': recommended_jobs,
+    }
+    return render(request, 'users/profile.html', context)
+
+@login_required
+def employer_dashboard(request):
+    """
+    Dashboard for Employers to manage their jobs.
+    """
+    user = request.user
+    if not hasattr(user, 'profile') or user.profile.role != 'employer':
+        messages.error(request, "Access denied. Employer account required.")
+        return redirect('profile')
+
+    my_jobs = Job.objects.filter(author=user).annotate(app_count=Count('applications')).order_by('-created_at')
+    
+    context = {
+        'my_jobs': my_jobs,
+        'is_verified': user.profile.is_employer_verified
+    }
+    return render(request, 'users/employer_dashboard.html', context)
 
 def logout_view(request):
     logout(request)
-    return render(request, 'users/logout.html')
+    return redirect('login')
 
 # === PASSWORD RESET FLOW (FIXED & IMPROVED) ===
 

@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row justify-content-center align-items-center" style="min-height: 60vh;">
+    <div class="col-md-6 col-lg-5 col-xl-4">
+        <div class="card border-0 shadow-lg bg-glass overflow-hidden text-center position-relative">
+            <!-- Danger Top Strip -->
+            <div class="position-absolute top-0 start-0 w-100 bg-danger" style="height: 6px;"></div>
+
+            <div class="card-body p-5">
+                <div class="mb-4 text-danger animate-pulse">
+                    <div class="bg-danger-subtle rounded-circle d-flex align-items-center justify-content-center mx-auto"
+                        style="width: 80px; height: 80px;">
+                        <i class="bi bi-exclamation-triangle-fill fs-1"></i>
+                    </div>
+                </div>
+
+                <h3 class="text-dark fw-bold mb-3 tracking-tight">Delete Job?</h3>
+                <p class="text-secondary mb-4">
+                    Are you sure you want to delete <br>
+                    <span class="text-dark fw-bold fst-italic">"{{ item.title }}"</span>?
+                </p>
+
+                <div class="alert alert-warning border-0 bg-warning-subtle text-warning-emphasis small py-2 mb-4">
+                    <i class="bi bi-info-circle me-1"></i> This action cannot be undone.
+                </div>
+
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="d-flex justify-content-center gap-3">
+                        <a href="{% url 'job_detail' item.id %}"
+                            class="btn btn-light rounded-pill px-4 fw-medium text-secondary">
+                            Cancel
+                        </a>
+                        <button type="submit" class="btn btn-danger rounded-pill px-5 fw-bold shadow-sm">
+                            Yes, Delete
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    @keyframes pulse-red {
+        0% {
+            box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.4);
+        }
+
+        70% {
+            box-shadow: 0 0 0 10px rgba(220, 53, 69, 0);
+        }
+
+        100% {
+            box-shadow: 0 0 0 0 rgba(220, 53, 69, 0);
+        }
+    }
+
+    .animate-pulse .rounded-circle {
+        animation: pulse-red 2s infinite;
+    }
+</style>
+{% endblock %}
