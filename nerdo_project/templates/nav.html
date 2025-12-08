@@ -26,8 +26,8 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link px-3 rounded-pill fw-medium text-secondary" href="#">
-                        <i class="bi bi-mortarboard me-1"></i> Campus
+                    <a class="nav-link px-3 rounded-pill fw-medium text-secondary" href="{% url 'learning_home' %}">
+                        <i class="bi bi-mortarboard-fill"></i> Upskill
                     </a>
                 </li>
                 <li class="nav-item">
@@ -73,7 +73,8 @@
                                 </div>
                                 {% endif %}
                                 <div class="overflow-hidden">
-                                    <h6 class="mb-0 fw-bold text-dark text-truncate">{{ user.first_name }} {{user.last_name }}</h6>
+                                    <h6 class="mb-0 fw-bold text-dark text-truncate">{{ user.first_name }}
+                                        {{user.last_name }}</h6>
                                     <small class="text-muted text-truncate d-block">{{ user.email }}</small>
                                 </div>
                             </a>
