@@ -6,9 +6,20 @@ from django.dispatch import receiver
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
+    # Roles
+    ROLE_CHOICES = [
+        ('job_seeker', 'Job Seeker'),
+        ('employer', 'Employer'),
+    ]
+    role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='job_seeker')
+
     # Identity
     ajira_id = models.CharField(max_length=20, blank=True, help_text="e.g., AJ-123456")
     phone_number = models.CharField(max_length=15, blank=True)
+    
+    # Profile Data
+    avatar = models.ImageField(upload_to='avatars/', default='defaults/default_avatar.png', blank=True)
+    cv = models.FileField(upload_to='cvs/', blank=True, null=True, help_text="Upload your CV/Resume (PDF/Docx)")
 
     # NEW: OTP Fields
     otp_code = models.CharField(max_length=6, blank=True, null=True)
@@ -17,6 +28,7 @@ class Profile(models.Model):
     # Status Flags
     is_verified = models.BooleanField(default=False) 
     is_phone_verified = models.BooleanField(default=False) # New flag
+    is_employer_verified = models.BooleanField(default=False, help_text="Designates if this employer can post jobs.")
 
     bio = models.TextField(blank=True, max_length=500)
 

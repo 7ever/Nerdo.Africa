@@ -7,6 +7,7 @@ urlpatterns = [
     path('register/', views.register, name='register'),
     path('verify-otp/', views.verify_otp, name='verify_otp'),
     path('profile/', views.profile, name='profile'),
+    path('employer/dashboard/', views.employer_dashboard, name='employer_dashboard'),
     path('login/', auth_views.LoginView.as_view(template_name='users/login.html'), name='login'),
     
     # Custom Logout (using the wrapper view we created in views.py)

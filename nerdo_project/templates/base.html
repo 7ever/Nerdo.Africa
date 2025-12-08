@@ -1,84 +1,137 @@
 <!DOCTYPE html>
 {% load static %}
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nerdo.Africa | {% block title %}Home{% endblock %}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    
-    <style>
-        /* Modern Gradient Background */
-        body { 
-            display: flex; 
-            flex-direction: column; 
-            min-height: 100vh; 
-            background: linear-gradient(135deg, #e0f7fa 0%, #d9ffbe 50%, #4dd0e1 100%);
-            background-attachment: fixed;
-        }
-        main { flex: 1; }
 
-        /* Glassmorphism Class */
-        .bg-glass {
-            background: rgba(255, 255, 255, 0.65);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.5);
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-        }
 
-        /* Modern Card Styling */
-        .card { 
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.6);
-            border-radius: 16px;
-            transition: transform 0.2s, box-shadow 0.2s; 
-        }
-    </style>
 </head>
+<style>
+    @import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css");
+    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700&display=swap');
+
+    :root {
+        --primary-gradient: linear-gradient(135deg, #059669 0%, #10b981 100%);
+        --glass-bg: rgba(255, 255, 255, 0.75);
+        --glass-border: rgba(16, 185, 129, 0.2);
+        /* Slight green tint border */
+        --accent-color: #10b981;
+        /* Emerald Green accent */
+    }
+
+    body {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        background: #f0fdf4;
+        /* Light Green Fallback */
+        background-image:
+            radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.15) 0px, transparent 50%),
+            radial-gradient(at 100% 0%, rgba(5, 150, 105, 0.15) 0px, transparent 50%);
+        background-attachment: fixed;
+        font-family: 'Outfit', sans-serif;
+        color: #334155;
+    }
+
+    main {
+        flex: 1;
+    }
+
+    /* Glassmorphism Class */
+    .bg-glass {
+        background: var(--glass-bg);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border-bottom: 1px solid var(--glass-border);
+        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.03);
+    }
+
+    /* Modern Card Styling */
+    .card {
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.6);
+        border-radius: 20px;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        border-color: var(--accent-color);
+    }
+
+    .btn-modern {
+        background: linear-gradient(135deg, #10b981, #059669);
+        /* Green Gradient */
+        border: none;
+        color: white;
+        transition: opacity 0.3s;
+    }
+
+    .btn-modern:hover {
+        opacity: 0.9;
+        color: white;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        letter-spacing: -0.025em;
+    }
+</style>
+
 <body>
 
     {% include 'nav.html' %}
 
     <main class="container my-5">
-        
-        {% if messages %}
-            <div class="row justify-content-center mb-4">
-                <div class="col-md-8">
-                    {% for message in messages %}
-                        <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show border-0 shadow-sm rounded-3 d-flex align-items-center p-3" role="alert">
-                            
-                            <!-- Dynamic Icons based on Message Type -->
-                            <div class="me-3 fs-4">
-                                {% if message.tags == 'success' %}
-                                    <i class="bi bi-check-circle-fill"></i>
-                                {% elif message.tags == 'error' %}
-                                    <i class="bi bi-x-octagon-fill"></i>
-                                {% elif message.tags == 'warning' %}
-                                    <i class="bi bi-exclamation-triangle-fill"></i>
-                                {% else %}
-                                    <i class="bi bi-info-circle-fill"></i>
-                                {% endif %}
-                            </div>
 
-                            <div class="flex-grow-1">
-                                <strong>
-                                    {% if message.tags == 'success' %}Success!
-                                    {% elif message.tags == 'error' %}Error!
-                                    {% elif message.tags == 'warning' %}Attention:
-                                    {% else %}Info:
-                                    {% endif %}
-                                </strong> 
-                                {{ message }}
-                            </div>
-                            
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>
-                    {% endfor %}
+        {% if messages %}
+        <div class="row justify-content-center mb-4">
+            <div class="col-md-8">
+                {% for message in messages %}
+                <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show border-0 shadow-sm rounded-3 d-flex align-items-center p-3"
+                    role="alert">
+
+                    <!-- Dynamic Icons based on Message Type -->
+                    <div class="me-3 fs-4">
+                        {% if message.tags == 'success' %}
+                        <i class="bi bi-check-circle-fill"></i>
+                        {% elif message.tags == 'error' %}
+                        <i class="bi bi-x-octagon-fill"></i>
+                        {% elif message.tags == 'warning' %}
+                        <i class="bi bi-exclamation-triangle-fill"></i>
+                        {% else %}
+                        <i class="bi bi-info-circle-fill"></i>
+                        {% endif %}
+                    </div>
+
+                    <div class="flex-grow-1">
+                        <strong>
+                            {% if message.tags == 'success' %}Success!
+                            {% elif message.tags == 'error' %}Error!
+                            {% elif message.tags == 'warning' %}Attention:
+                            {% else %}Info:
+                            {% endif %}
+                        </strong>
+                        {{ message }}
+                    </div>
+
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
+                {% endfor %}
             </div>
+        </div>
         {% endif %}
 
         {% block content %}
@@ -94,4 +147,5 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>

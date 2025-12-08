@@ -4,7 +4,10 @@ from django.contrib.auth.forms import UserCreationForm
 from .models import Profile
 
 class UserRegisterForm(UserCreationForm):
+    first_name = forms.CharField(max_length=30, required=True, widget=forms.TextInput(attrs={'placeholder': 'First Name'}))
+    last_name = forms.CharField(max_length=30, required=True, widget=forms.TextInput(attrs={'placeholder': 'Last Name'}))
     email = forms.EmailField(required=True)
+    
     # 1. Add Phone Number field (Required for OTP)
     phone_number = forms.CharField(
         max_length=15, 
@@ -12,6 +15,12 @@ class UserRegisterForm(UserCreationForm):
         help_text="Required for account recovery (e.g. +2547...)"
     )
     
+    ROLE_CHOICES = [
+        ('job_seeker', 'I am a Job Seeker'),
+        ('employer', 'I am an Employer'),
+    ]
+    role = forms.ChoiceField(choices=ROLE_CHOICES, widget=forms.RadioSelect, initial='job_seeker')
+
     ajira_id = forms.CharField(
         max_length=20, 
         required=False, 
@@ -20,7 +29,7 @@ class UserRegisterForm(UserCreationForm):
 
     class Meta:
         model = User
-        fields = ['username', 'email', 'phone_number', 'ajira_id']
+        fields = ['first_name', 'last_name', 'username', 'email', 'phone_number', 'ajira_id']
 
     # --- EMAIL VALIDATION ---
     def clean_email(self):
@@ -52,20 +61,54 @@ class UserRegisterForm(UserCreationForm):
     def save(self, commit=True):
         user = super().save(commit=False)
         user.email = self.cleaned_data['email']
+        user.first_name = self.cleaned_data['first_name']
+        user.last_name = self.cleaned_data['last_name']
         
         if commit:
             user.save()
             # Save Phone Number to Profile
             user.profile.phone_number = self.cleaned_data.get('phone_number')
             user.profile.ajira_id = self.cleaned_data.get('ajira_id')
+            user.profile.role = self.cleaned_data.get('role')
             
             if user.profile.ajira_id:
                 user.profile.is_verified = True 
             else:
                 user.profile.is_verified = False
-                
+            
+            # Set Employer Verification to False explicitly (pending)
+            if user.profile.role == 'employer':
+                user.profile.is_employer_verified = False
+
             user.profile.save()
         return user
+
+class ProfileUpdateForm(forms.ModelForm):
+    first_name = forms.CharField(max_length=30, required=True)
+    last_name = forms.CharField(max_length=30, required=True)
+    
+    class Meta:
+        model = Profile
+        fields = ['avatar', 'phone_number', 'bio', 'cv'] # Added CV (FileField)
+
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        super().__init__(*args, **kwargs)
+        if user:
+            self.fields['first_name'].initial = user.first_name
+            self.fields['last_name'].initial = user.last_name
+
+    def save(self, commit=True):
+        profile = super().save(commit=False)
+        if commit:
+            profile.save()
+            # Update User model fields
+            if self.cleaned_data.get('first_name'):
+                profile.user.first_name = self.cleaned_data['first_name']
+            if self.cleaned_data.get('last_name'):
+                profile.user.last_name = self.cleaned_data['last_name']
+            profile.user.save()
+        return profile
 
 # 2. Form for Requesting the Reset (Enter Phone)
 class PasswordResetRequestForm(forms.Form):
