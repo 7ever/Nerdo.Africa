@@ -1,41 +1,180 @@
 {% extends "base.html" %}
+{% load crispy_forms_tags %}
 
 {% block content %}
-<div class="container">
-    <div class="card mb-3 border-0 shadow-sm">
-        <div class="card-body">
-            <div class="d-flex align-items-center">
-                <div>
-                    <h2 class="mb-0">{{ user.username }}</h2>
-                    <p class="text-muted mb-0">{{ user.email }}</p>
+<div class="container py-5">
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="fw-bold mb-0">Dashboard</h1>
+            <p class="text-muted">Welcome back, {{ user.first_name|default:user.username }}!</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- LEFT COLUMN: Profile Card -->
+        <div class="col-lg-4 mb-4">
+            <div class="card border-0 shadow-sm rounded-3 overflow-hidden">
+                <div class="card-body text-center p-4">
+                    <div class="mb-3 position-relative d-inline-block">
+                        {% if user.profile.avatar and 'avatars/' in user.profile.avatar.url %}
+                        <img src="{{ user.profile.avatar.url }}" class="rounded-circle shadow-sm object-fit-cover"
+                            width="120" height="120" alt="Avatar">
+                        {% else %}
+                        <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center mx-auto"
+                            style="width: 120px; height: 120px;">
+                            <span class="display-3 fw-bold">{{ user.username|make_list|first|upper }}</span>
+                        </div>
+                        {% endif %}
+                        <button class="btn btn-sm btn-light position-absolute bottom-0 end-0 rounded-circle shadow-sm"
+                            data-bs-toggle="modal" data-bs-target="#editProfileModal">✎</button>
+                    </div>
+
+                    <h4 class="mb-1">{{ user.first_name }} {{ user.last_name }}</h4>
+                    <p class="text-muted small mb-2">@{{ user.username }}</p>
+
                     {% if user.profile.is_verified %}
-                        <span class="badge bg-success mt-2">✅ GOK Verified Talent</span>
+                    <span
+                        class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-2">
+                        ✓ Verified Talent
+                    </span>
                     {% else %}
-                        <span class="badge bg-warning text-dark mt-2">⚠️ Pending Verification</span>
+                    <span
+                        class="badge bg-warning-subtle text-warning border border-warning-subtle rounded-pill px-3 py-2">
+                        ⧗ Verification Pending
+                    </span>
+                    {% endif %}
+
+                    <div class="mt-4 text-start">
+                        <hr>
+                        <small class="text-muted fw-bold text-uppercase">Contact Info</small>
+                        <p class="mb-1 mt-1">📞 {{ user.profile.phone_number }}</p>
+                        <p class="mb-3">✉️ {{ user.email }}</p>
+
+                        <small class="text-muted fw-bold text-uppercase">Documents</small>
+                        <div class="mt-1">
+                            {% if user.profile.cv %}
+                            <a href="{{ user.profile.cv.url }}" class="btn btn-sm btn-outline-primary w-100 mb-2"
+                                target="_blank">📄 View My CV</a>
+                            {% else %}
+                            <div class="alert alert-warning py-2 small">⚠️ No CV Uploaded</div>
+                            {% endif %}
+                        </div>
+
+                        {% if user.profile.bio %}
+                        <small class="text-muted fw-bold text-uppercase">Bio</small>
+                        <p class="small text-muted fst-italic mt-1">{{ user.profile.bio }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT COLUMN: Assignments & Jobs -->
+        <div class="col-lg-8">
+
+            <!-- My Applications Section -->
+            <div class="card border-0 shadow-sm rounded-3 mb-4">
+                <div class="card-header bg-white border-bottom-0 pt-4 pb-0">
+                    <h5 class="fw-bold">🚀 My Applications</h5>
+                </div>
+                <div class="card-body">
+                    {% if my_applications %}
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Job Title</th>
+                                    <th>Date Applied</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for app in my_applications %}
+                                <tr>
+                                    <td>
+                                        <div class="fw-bold">{{ app.job.title }}</div>
+                                        <small class="text-muted">{{ app.job.get_job_type_display }}</small>
+                                    </td>
+                                    <td>{{ app.applied_at|date:"M d, Y" }}</td>
+                                    <td>
+                                        <span class="badge bg-primary-subtle text-primary rounded-pill">Applied</span>
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'job_detail' app.job.id %}"
+                                            class="btn btn-sm btn-light">View</a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-5 bg-light rounded-3">
+                        <div class="fs-1 mb-2">📂</div>
+                        <p class="text-muted">You haven't applied to any jobs yet.</p>
+                        <a href="{% url 'job_market' %}" class="btn btn-success">Browse Jobs</a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Recommended Jobs Section -->
+            <div class="card border-0 shadow-sm rounded-3">
+                <div
+                    class="card-header bg-white border-bottom-0 pt-4 pb-0 d-flex justify-content-between align-items-center">
+                    <h5 class="fw-bold">✨ Recommended for You</h5>
+                    <a href="{% url 'job_market' %}" class="text-success text-decoration-none small fw-bold">View All
+                        &rarr;</a>
+                </div>
+                <div class="card-body">
+                    {% if recommended_jobs %}
+                    <div class="row g-3">
+                        {% for job in recommended_jobs %}
+                        <div class="col-md-4">
+                            <div class="card h-100 border bg-light role-card">
+                                <div class="card-body">
+                                    <span class="badge bg-white text-dark border mb-2">{{ job.get_category_display}}</span>
+                                    <h6 class="card-title fw-bold text-truncate" title="{{ job.title }}">{{ job.title }}
+                                    </h6>
+                                    <p class="card-text small text-muted mb-2">
+                                        💰 KES {{ job.budget|stringformat:".0f" }}
+                                    </p>
+                                    <a href="{% url 'job_detail' job.id %}"
+                                        class="btn btn-sm btn-outline-success w-100 stretched-link">View Details</a>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="text-muted">No specific recommendations yet. Browse the market!</p>
                     {% endif %}
                 </div>
             </div>
         </div>
     </div>
+</div>
 
-    <div class="row">
-        <div class="col-md-4">
-            <div class="card h-100 border-0 shadow-sm">
-                <div class="card-header bg-success text-white">Credentials</div>
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item"><strong>Ajira ID:</strong> {{ user.profile.ajira_id }}</li>
-                    <li class="list-group-item"><strong>Status:</strong> Verified</li>
-                </ul>
+<!-- Edit Profile Modal -->
+<div class="modal fade" id="editProfileModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold">Edit Profile</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-        </div>
-        <div class="col-md-8">
-            <div class="card h-100 border-0 shadow-sm">
-                <div class="card-header bg-light">My Applications</div>
-                <div class="card-body">
-                    <p class="text-muted">You haven't applied to any jobs yet.</p>
-                    <a href="{% url 'job_market' %}" class="btn btn-sm btn-outline-success">Find Work</a>
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="modal-body">
+                    {{ p_form|crispy }}
                 </div>
-            </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-success">Save Changes</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>

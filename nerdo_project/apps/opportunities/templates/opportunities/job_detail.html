@@ -14,7 +14,7 @@
                 <h5>Description</h5>
                 <p class="lead text-muted">{{ job.description|linebreaks }}</p>
                 
-                <a href="{% url 'job_market' %}" class="btn btn-outline-secondary mt-3">Back to Market</a>
+                <a href="{% url 'job_market' %}" class="btn btn-outline-success mt-3">Back to Market</a>
             </div>
         </div>
         
@@ -27,7 +27,7 @@
                             <strong>Level:</strong> <span>{{ job.get_experience_level_display }}</span>
                         </li>
                         <li class="list-group-item d-flex justify-content-between">
-                            <strong>Deadline:</strong> <span class="text-danger">{{ job.deadline }}</span>
+                            <strong>Deadline:</strong> <span class="text-dark">{{ job.deadline }}</span>
                         </li>
                     </ul>
                     <div class="d-grid">

@@ -2,21 +2,126 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-6">
-        <div class="card shadow-sm border-0">
-            <div class="card-body p-4">
-                <h3 class="mb-3 text-success">Join Nerdo.Africa</h3>
-                <p class="text-muted mb-4">Verify your digital skills and get hired.</p>
-                <form method="POST">
+<style>
+    .role-card {
+        cursor: pointer;
+        transition: all 0.3s;
+        border: 2px solid #eee;
+    }
+    .role-card:hover {
+        border-color: #198754;
+        background-color: #f8fffb;
+    }
+    .role-card.active {
+        border-color: #198754;
+        background-color: #e6f7ef;
+        position: relative;
+    }
+    .role-card.active::after {
+        content: '✓';
+        position: absolute;
+        top: 10px;
+        right: 15px;
+        color: #198754;
+        font-weight: bold;
+        font-size: 1.2rem;
+    }
+    /* Hide actual radio buttons but keep semantic association */
+    #div_id_role .form-check {
+        display: none; 
+    }
+</style>
+
+<div class="row justify-content-center py-5">
+    <div class="col-md-8 col-lg-6">
+        <div class="card shadow-lg border-0 rounded-3">
+            <div class="card-body p-5">
+                <div class="text-center mb-4">
+                    <h2 class="fw-bold text-success">Create Account</h2>
+                    <p class="text-muted">Join Nerdo.Africa's community of top talent.</p>
+                </div>
+
+                <form method="POST" id="regForm">
                     {% csrf_token %}
-                    {{ form|crispy }}
-                    <button class="btn btn-success w-100 mt-3" type="submit">Sign Up</button>
+                    
+                    <!-- Role Selection UI -->
+                    <label class="form-label fw-bold mb-3">I want to...</label>
+                    <div class="row g-3 mb-4">
+                        <div class="col-6">
+                            <div class="card p-3 text-center role-card active" onclick="selectRole('job_seeker')">
+                                <div class="mb-2">👨‍💻</div>
+                                <div class="fw-bold">Find Work</div>
+                                <small class="text-muted">As a Job Seeker</small>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="card p-3 text-center role-card" onclick="selectRole('employer')">
+                                <div class="mb-2">💼</div>
+                                <div class="fw-bold">Hire Talent</div>
+                                <small class="text-muted">As an Employer</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Hidden Radio Inputs controlled by JS -->
+                    <div class="d-none">
+                        {{ form.role }}
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            {{ form.first_name|as_crispy_field }}
+                        </div>
+                        <div class="col-md-6">
+                             {{ form.last_name|as_crispy_field }}
+                        </div>
+                    </div>
+
+                    {{ form.username|as_crispy_field }}
+                    {{ form.email|as_crispy_field }}
+                    {{ form.phone_number|as_crispy_field }}
+                    
+                    <!-- Password Field Manual Render (if needed to group) -->
+                    {{ form.password1|as_crispy_field }}
+                    {{ form.password2|as_crispy_field }}
+
+                    <div id="ajira-field">
+                        {{ form.ajira_id|as_crispy_field }}
+                    </div>
+
+                    <div class="d-grid mt-4">
+                        <button class="btn btn-success btn-lg shadow-sm" type="submit">Create Account</button>
+                    </div>
                 </form>
-                <hr>
-                <small>Already have an account? <a href="{% url 'login' %}">Log In</a></small>
+
+                <div class="text-center mt-4">
+                    <small>Already have an account? <a href="{% url 'login' %}" class="text-decoration-none fw-bold">Log In</a></small>
+                </div>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+    function selectRole(role) {
+        // 1. Update Visuals
+        document.querySelectorAll('.role-card').forEach(el => el.classList.remove('active'));
+        if (role === 'job_seeker') {
+            document.querySelectorAll('.role-card')[0].classList.add('active');
+            document.getElementById('ajira-field').style.display = 'block';
+        } else {
+            document.querySelectorAll('.role-card')[1].classList.add('active');
+            document.getElementById('ajira-field').style.display = 'none';
+        }
+
+        // 2. Select underlying radio button
+        // Django renders radio choices with id_role_0, id_role_1 etc.
+        // Assuming job_seeker is first (0) and employer is second (1)
+        if (role === 'job_seeker') {
+            document.getElementById('id_role_0').checked = true;
+        } else {
+            document.getElementById('id_role_1').checked = true;
+        }
+    }
+</script>
 {% endblock %}

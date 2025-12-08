@@ -37,6 +37,9 @@ class Job(models.Model):
     category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default='Tech')
     experience_level = models.CharField(max_length=20, choices=LEVEL_CHOICES, default='Entry')
     
+    # Moderation
+    is_approved = models.BooleanField(default=False, help_text="Job must be approved by admin before being visible.")
+
     # Logistics
     deadline = models.DateField()
     created_at = models.DateTimeField(auto_now_add=True)
@@ -47,3 +50,15 @@ class Job(models.Model):
 
     def __str__(self):
         return f"{self.title} by {self.author.username if self.author else 'Unknown'}"
+    
+class Application(models.Model):
+    job = models.ForeignKey(Job, on_delete=models.CASCADE, related_name='applications')
+    applicant = models.ForeignKey(User, on_delete=models.CASCADE, related_name='my_applications')
+    cover_letter = models.TextField(blank=True, null=True)
+    applied_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('job', 'applicant') # Prevent double applying
+
+    def __str__(self):
+        return f"{self.applicant.username} -> {self.job.title}"

@@ -12,7 +12,6 @@
 
         <!-- 3. Menu -->
         <div class="collapse navbar-collapse" id="navbarNav">
-
             <!-- Left Actions -->
             <ul class="navbar-nav me-auto mb-2 mb-lg-0 ps-lg-5 ms-lg-5">
                 <li class="nav-item">
@@ -34,30 +33,49 @@
                     <a class="nav-link dropdown-toggle d-flex align-items-center gap-2 text-dark fw-medium" href="#"
                         role="button" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false">
                         <!-- Avatar Circle -->
+                        {% if user.profile.avatar and 'avatars/' in user.profile.avatar.url %}
+                        <img src="{{ user.profile.avatar.url }}" alt="{{ user.username }}"
+                            class="rounded-circle object-fit-cover border border-white shadow-sm"
+                            style="width: 32px; height: 32px" />
+                        {% else %}
                         <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center small"
-                            style="width: 32px; height: 32px;">
+                            style="width: 32px; height: 32px">
                             {{ user.username|make_list|first|upper }}
                         </div>
+                        {% endif %}
                         <span class="d-none d-lg-inline">{{ user.username }}</span>
                     </a>
 
-                    <ul class="dropdown-menu dropdown-menu-lg-end border-0 shadow-lg mt-3 mx-0 p-2 rounded-4" style="min-width:180px;">
+                    <ul class="dropdown-menu dropdown-menu-lg-end border-0 shadow-lg mt-3 mx-0 p-2 rounded-4"
+                        style="min-width: 180px">
                         <li>
-                            <a class="dropdown-item d-flex align-items-center p-3 bg-light bg-opacity-50 rounded-3" href="{% url 'profile' %}">
-                                <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 45px; height: 45px; font-size: 1.2rem;">
+                            <a class="dropdown-item d-flex align-items-center p-3 bg-light bg-opacity-50 rounded-3"
+                                href="{% url 'profile' %}">
+                                {% if user.profile.avatar and 'avatars/' in user.profile.avatar.url %}
+                                <img src="{{ user.profile.avatar.url }}" alt="{{ user.username }}"
+                                    class="rounded-circle object-fit-cover flex-shrink-0 shadow-sm"
+                                    style="width: 45px; height: 45px" />
+                                {% else %}
+                                <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
+                                    style="width: 45px; height: 45px; font-size: 1.2rem">
                                     {{ user.username|make_list|first|upper }}
                                 </div>
+                                {% endif %}
                                 <div class="ms-2 overflow-hidden">
-                                    <h6 class="mb-0 fw-bold text-dark text-truncate">{{ user.username }}</h6>
-                                    <small class="text-muted text-truncate d-block" style="font-size: 0.85rem;">{{ user.email }}</small>
+                                    <h6 class="mb-0 fw-bold text-dark text-truncate">
+                                        {{ user.first_name }} {{ user.last_name }}
+                                    </h6>
+                                    <small class="text-muted text-truncate d-block"
+                                        style="font-size: 0.85rem; max-width: 150px; min-width: 0">{{ user.email}}</small>
                                 </div>
                             </a>
                         </li>
 
                         <!-- Premium Account Status Indicator -->
                         {% if user.profile.is_verified %}
-                        <li class="px-3 py-1"><span class="badge bg-success py-2 small"><i
-                                    class="bi me-1"></i> Premium Member</span></li>
+                        <li class="px-3 py-1">
+                            <span class="badge bg-success py-2"><i class="bi me-1"></i> Premium Member</span>
+                        </li>
                         {% else %}
                         <li class="px-3 py-1">
                             <a href="{% url 'pay_premium' %}" class="btn btn-warning btn-sm fw-bold text-dark small">
@@ -67,7 +85,7 @@
                         {% endif %}
 
                         <li>
-                            <hr class="dropdown-divider">
+                            <hr class="dropdown-divider" />
                         </li>
 
                         <li>
@@ -75,7 +93,7 @@
                                 href="{% url 'profile' %}">
                                 <!-- Profile SVG -->
                                 <svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium text-secondary"
-                                    style="width: 24px; height: 24px;" focusable="false" aria-hidden="true"
+                                    style="width: 24px; height: 24px" focusable="false" aria-hidden="true"
                                     viewBox="0 0 24 24">
                                     <path
                                         d="M12 5.9c1.16 0 2.1.94 2.1 2.1s-.94 2.1-2.1 2.1S9.9 9.16 9.9 8s.94-2.1 2.1-2.1m0 9c2.97 0 6.1 1.46 6.1 2.1v1.1H5.9V17c0-.64 3.13-2.1 6.1-2.1M12 4C9.79 4 8 5.79 8 8s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4m0 9c-2.67 0-8 1.34-8 4v3h16v-3c0-2.66-5.33-4-8-4">
@@ -88,11 +106,10 @@
                         <li>
                             <form action="{% url 'logout' %}" method="post">
                                 {% csrf_token %}
-                                <button type="submit"
-                                    class="dropdown-item d-flex align-items-center rounded-3 py-2">
+                                <button type="submit" class="dropdown-item d-flex align-items-center rounded-3 py-2">
                                     <!-- Logout SVG -->
                                     <svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium ps-1"
-                                        style="width: 24px; height: 24px;" focusable="false" aria-hidden="true"
+                                        style="width: 24px; height: 24px" focusable="false" aria-hidden="true"
                                         viewBox="0 0 24 24">
                                         <path
                                             d="m17 8-1.41 1.41L17.17 11H9v2h8.17l-1.58 1.58L17 16l4-4zM5 5h7V3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h7v-2H5z">
