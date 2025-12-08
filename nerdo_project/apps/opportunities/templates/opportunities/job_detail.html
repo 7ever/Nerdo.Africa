@@ -1,38 +1,104 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container mt-4">
-    <div class="row">
-        <div class="col-md-8">
-            <div class="card shadow-sm p-4 mb-4">
-                <div class="mb-2">
-                    <span class="badge bg-success">{{ job.get_category_display }}</span>
-                    <span class="badge bg-dark">{{ job.get_job_type_display }}</span>
-                </div>
-                <h2 class="fw-bold">{{ job.title }}</h2>
-                <hr>
-                <h5>Description</h5>
-                <p class="lead text-muted">{{ job.description|linebreaks }}</p>
-                
-                <a href="{% url 'job_market' %}" class="btn btn-outline-success mt-3">Back to Market</a>
+<div class="container py-5">
+    <!-- Hero Header -->
+    <div class="card border-0 shadow-lg bg-glass overflow-hidden mb-5">
+        <div class="position-relative"
+            style="height: 180px; background: linear-gradient(135deg, #0f172a 0%, #334155 100%);">
+            <div class="position-absolute top-0 start-0 w-100 h-100 opacity-25"
+                style="background-image: radial-gradient(#ffffff 1px, transparent 1px); background-size: 20px 20px;">
             </div>
         </div>
-        
-        <div class="col-md-4">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <h4 class="text-success fw-bold text-center mb-3">KES {{ job.budget }}</h4>
-                    <ul class="list-group list-group-flush mb-3">
-                        <li class="list-group-item d-flex justify-content-between">
-                            <strong>Level:</strong> <span>{{ job.get_experience_level_display }}</span>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between">
-                            <strong>Deadline:</strong> <span class="text-dark">{{ job.deadline }}</span>
-                        </li>
-                    </ul>
-                    <div class="d-grid">
-                        <button class="btn btn-success btn-lg">Apply Now</button>
+
+        <div class="px-5 pb-5 position-relative" style="margin-top: -60px;">
+            <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
+                <div class="d-flex gap-4 align-items-end">
+                    <div class="bg-white rounded-4 shadow-lg d-flex align-items-center justify-content-center border border-light p-4"
+                        style="width: 100px; height: 100px;">
+                        <span class="fw-bold fs-1 text-primary">{{ job.title|slice:":1" }}</span>
                     </div>
+                    <div class="mb-2">
+                        <h1 class="fw-bold text-dark tracking-tight mb-1">{{ job.title }}</h1>
+                        <div class="d-flex align-items-center gap-3 text-secondary fw-medium">
+                            <span><i class="bi bi-building me-1"></i> {{ job.author.username }}</span>
+                            <span><i class="bi bi-geo-alt me-1"></i> Remote</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4 pt-2">
+                    {% if user == job.author %}
+                    <a href="{% url 'update_job' job.id %}"
+                        class="btn btn-outline-primary rounded-pill px-4 fw-bold">Edit Job</a>
+                    <a href="{% url 'delete_job' job.id %}"
+                        class="btn btn-outline-danger rounded-pill px-4 fw-bold ms-2">Delete</a>
+                    {% else %}
+                    <form action="{% url 'apply_job' job.id %}" method="POST" class="d-inline">
+                        {% csrf_token %}
+                        <button class="btn btn-modern rounded-pill px-5 py-3 fw-bold shadow-lg">
+                            Apply Now <i class="bi bi-send-fill ms-2"></i>
+                        </button>
+                    </form>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-5">
+        <!-- Main Content -->
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm rounded-4 p-5 mb-4">
+                <h4 class="fw-bold mb-4 d-flex align-items-center gap-2 text-dark">
+                    <i class="bi bi-file-text text-primary"></i> About the job
+                </h4>
+                <div class="text-secondary lh-lg fs-6" style="white-space: pre-line;">
+                    {{ job.description }}
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-lg bg-glass rounded-4 p-4 sticky-top text-center" style="top: 100px;">
+                <h5 class="fw-bold mb-4">Job Overview</h5>
+
+                <div class="row g-3 mb-4">
+                    <div class="col-6">
+                        <div class="p-3 bg-light rounded-3 text-center border border-light-subtle">
+                            <i class="bi bi-wallet2 text-success fs-4 mb-2 d-block"></i>
+                            <small class="text-muted d-block text-uppercase" style="font-size: 0.7rem;">Budget</small>
+                            <span class="fw-bold text-dark">KES {{ job.budget }}</span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="p-3 bg-light rounded-3 text-center border border-light-subtle">
+                            <i class="bi bi-bar-chart-fill text-primary fs-4 mb-2 d-block"></i>
+                            <small class="text-muted d-block text-uppercase" style="font-size: 0.7rem;">Level</small>
+                            <span class="fw-bold text-dark">{{ job.get_experience_level_display }}</span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="p-3 bg-light rounded-3 text-center border border-light-subtle">
+                            <i class="bi bi-briefcase-fill text-warning fs-4 mb-2 d-block"></i>
+                            <small class="text-muted d-block text-uppercase" style="font-size: 0.7rem;">Type</small>
+                            <span class="fw-bold text-dark">{{ job.get_job_type_display }}</span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="p-3 bg-light rounded-3 text-center border border-light-subtle">
+                            <i class="bi bi-tags-fill text-info fs-4 mb-2 d-block"></i>
+                            <small class="text-muted d-block text-uppercase" style="font-size: 0.7rem;">Category</small>
+                            <span class="fw-bold text-dark">{{ job.get_category_display }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-grid">
+                    <a href="{% url 'job_market' %}" class="btn btn-light rounded-pill fw-bold text-muted">
+                        <i class="bi bi-arrow-left me-2"></i> Back to Market
+                    </a>
                 </div>
             </div>
         </div>

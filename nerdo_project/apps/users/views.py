@@ -12,6 +12,7 @@ from .models import Profile
 from apps.opportunities.models import Job, Application 
 from .utils import generate_otp, send_otp_sms
 import random
+from django.db.models import Count
 
 # === LOCAL FORMS FOR PASSWORD RESET FLOW ===
 class IdentifyUserForm(forms.Form):
@@ -176,7 +177,7 @@ def profile(request):
     # Simple logic: Latest 3 jobs matching a default category or just latest 3
     # For now, let's just show latest 3 jobs. 
     # Improvement: Filter by skills/category if we had that data in Profile.
-    recommended_jobs = Job.objects.filter(is_approved=True).exclude(applications__applicant=user).order_by('-created_at')[:3]
+    recommended_jobs = Job.objects.filter(is_approved=True).exclude(applications__applicant=user).select_related('author').order_by('-created_at')[:3]
 
     context = {
         'p_form': p_form,
@@ -195,7 +196,7 @@ def employer_dashboard(request):
         messages.error(request, "Access denied. Employer account required.")
         return redirect('profile')
 
-    my_jobs = Job.objects.filter(author=user).order_by('-created_at')
+    my_jobs = Job.objects.filter(author=user).annotate(app_count=Count('applications')).order_by('-created_at')
     
     context = {
         'my_jobs': my_jobs,

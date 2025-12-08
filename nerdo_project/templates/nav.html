@@ -1,27 +1,39 @@
-<nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm mb-4 sticky-top">
+{% load static %}
+<nav class="navbar navbar-expand-lg fixed-top bg-glass mb-4">
     <div class="container">
-        <!-- 1. Minimalist Brand -->
-        <a class="navbar-brand fw-bold text-success fs-4" href="{% url 'job_market' %}">
-            <i class="bi"></i>Nerdo
+        <!-- 1. Modern Brand -->
+        <a class="navbar-brand fw-bold fs-4 d-flex align-items-center gap-2" href="{% url 'job_market' %}">
+            <div class="bg-primary text-white rounded-3 d-flex align-items-center justify-content-center shadow-sm"
+                style="width: 40px; height: 40px; background: linear-gradient(135deg, #10b981, #059669) !important;">
+                N
+            </div>
+            <span class="text-dark tracking-tight">Nerdo<span class="text-success">.Africa</span></span>
         </a>
 
         <!-- 2. Toggler -->
-        <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
+        <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse"
+            data-bs-target="#navbarNav">
+            <span class="bi bi-list fs-1"></span>
         </button>
 
         <!-- 3. Menu -->
         <div class="collapse navbar-collapse" id="navbarNav">
             <!-- Left Actions -->
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0 ps-lg-5 ms-lg-5">
+            <ul class="navbar-nav mx-auto mb-2 mb-lg-0 gap-1">
                 <li class="nav-item">
-                    <a class="nav-link active fw-medium px-3" href="{% url 'job_market' %}">Jobs</a>
+                    <a class="nav-link px-3 rounded-pill fw-medium text-secondary" href="{% url 'job_market' %}">
+                        <i class="bi bi-briefcase me-1"></i> Jobs
+                    </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link fw-medium px-3" href="#">Campus</a>
+                    <a class="nav-link px-3 rounded-pill fw-medium text-secondary" href="#">
+                        <i class="bi bi-mortarboard me-1"></i> Campus
+                    </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link fw-medium px-3" href="#">Community</a>
+                    <a class="nav-link px-3 rounded-pill fw-medium text-secondary" href="#">
+                        <i class="bi bi-people me-1"></i> Community
+                    </a>
                 </li>
             </ul>
 
@@ -30,92 +42,74 @@
                 {% if user.is_authenticated %}
 
                 <div class="dropdown">
-                    <a class="nav-link dropdown-toggle d-flex align-items-center gap-2 text-dark fw-medium" href="#"
-                        role="button" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false">
+                    <a class="nav-link dropdown-toggle d-flex align-items-center gap-2 text-dark fw-medium p-1 rounded-pill pe-3 hover-bg-light transition"
+                        href="#" role="button" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false">
                         <!-- Avatar Circle -->
                         {% if user.profile.avatar and 'avatars/' in user.profile.avatar.url %}
                         <img src="{{ user.profile.avatar.url }}" alt="{{ user.username }}"
-                            class="rounded-circle object-fit-cover border border-white shadow-sm"
-                            style="width: 32px; height: 32px" />
+                            class="rounded-circle object-fit-cover border border-2 border-white shadow-sm"
+                            style="width: 40px; height: 40px" />
                         {% else %}
-                        <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center small"
-                            style="width: 32px; height: 32px">
+                        <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center shadow-sm"
+                            style="width: 40px; height: 40px; background: linear-gradient(135deg, #10b981, #059669) !important;">
                             {{ user.username|make_list|first|upper }}
                         </div>
                         {% endif %}
-                        <span class="d-none d-lg-inline">{{ user.username }}</span>
+                        <span class="d-none d-lg-inline small fw-bold ms-1">{{ user.username }}</span>
                     </a>
 
-                    <ul class="dropdown-menu dropdown-menu-lg-end border-0 shadow-lg mt-3 mx-0 p-2 rounded-4"
-                        style="min-width: 180px">
-                        <li>
-                            <a class="dropdown-item d-flex align-items-center p-3 bg-light bg-opacity-50 rounded-3"
+                    <ul class="dropdown-menu dropdown-menu-lg-end border-0 shadow-lg mt-3 p-2 rounded-4"
+                        style="width: 260px; backdrop-filter: blur(20px); background: rgba(255,255,255,0.95);">
+                        <li class="mb-2">
+                            <a class="dropdown-item p-3 rounded-3 bg-light-subtle d-flex align-items-center gap-3"
                                 href="{% url 'profile' %}">
                                 {% if user.profile.avatar and 'avatars/' in user.profile.avatar.url %}
-                                <img src="{{ user.profile.avatar.url }}" alt="{{ user.username }}"
-                                    class="rounded-circle object-fit-cover flex-shrink-0 shadow-sm"
-                                    style="width: 45px; height: 45px" />
+                                <img src="{{ user.profile.avatar.url }}" class="rounded-circle shadow-sm" width="48"
+                                    height="48">
                                 {% else %}
-                                <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
-                                    style="width: 45px; height: 45px; font-size: 1.2rem">
+                                <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center fs-5 fw-bold"
+                                    style="width: 48px; height: 48px; background: linear-gradient(135deg, #10b981, #059669) !important;">
                                     {{ user.username|make_list|first|upper }}
                                 </div>
                                 {% endif %}
-                                <div class="ms-2 overflow-hidden">
-                                    <h6 class="mb-0 fw-bold text-dark text-truncate">
-                                        {{ user.first_name }} {{ user.last_name }}
-                                    </h6>
-                                    <small class="text-muted text-truncate d-block"
-                                        style="font-size: 0.85rem; max-width: 150px; min-width: 0">{{ user.email}}</small>
+                                <div class="overflow-hidden">
+                                    <h6 class="mb-0 fw-bold text-dark text-truncate">{{ user.first_name }} {{user.last_name }}</h6>
+                                    <small class="text-muted text-truncate d-block">{{ user.email }}</small>
                                 </div>
                             </a>
                         </li>
 
                         <!-- Premium Account Status Indicator -->
-                        {% if user.profile.is_verified %}
-                        <li class="px-3 py-1">
-                            <span class="badge bg-success py-2"><i class="bi me-1"></i> Premium Member</span>
-                        </li>
-                        {% else %}
-                        <li class="px-3 py-1">
-                            <a href="{% url 'pay_premium' %}" class="btn btn-warning btn-sm fw-bold text-dark small">
-                                <i class="bi me-1"></i> Upgrade to Premium
+                        <li class="px-2 mb-2">
+                            {% if user.profile.is_verified %}
+                            <div class="bg-success-subtle text-success p-2 rounded-3 text-center fw-bold small">
+                                <i class="bi bi-patch-check-fill me-1"></i> Premium Member
+                            </div>
+                            {% else %}
+                            <a href="{% url 'pay_premium' %}"
+                                class="btn btn-warning w-100 btn-sm fw-bold text-dark d-flex align-items-center justify-content-center gap-2">
+                                <i class="bi bi-star-fill"></i> Upgrade to Premium
                             </a>
-                        </li>
-                        {% endif %}
-
-                        <li>
-                            <hr class="dropdown-divider" />
+                            {% endif %}
                         </li>
 
                         <li>
-                            <a class="dropdown-item d-flex align-items-center rounded-3 py-2"
+                            <hr class="dropdown-divider opacity-10 my-1">
+                        </li>
+
+                        <li>
+                            <a class="dropdown-item d-flex align-items-center rounded-3 py-2 px-3 fw-medium text-secondary"
                                 href="{% url 'profile' %}">
-                                <!-- Profile SVG -->
-                                <svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium text-secondary"
-                                    style="width: 24px; height: 24px" focusable="false" aria-hidden="true"
-                                    viewBox="0 0 24 24">
-                                    <path
-                                        d="M12 5.9c1.16 0 2.1.94 2.1 2.1s-.94 2.1-2.1 2.1S9.9 9.16 9.9 8s.94-2.1 2.1-2.1m0 9c2.97 0 6.1 1.46 6.1 2.1v1.1H5.9V17c0-.64 3.13-2.1 6.1-2.1M12 4C9.79 4 8 5.79 8 8s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4m0 9c-2.67 0-8 1.34-8 4v3h16v-3c0-2.66-5.33-4-8-4">
-                                    </path>
-                                </svg>
-                                <span class="ms-3 fw-medium">My Profile</span>
+                                <i class="bi bi-person-gear fs-5 me-3"></i> My Profile
                             </a>
                         </li>
 
                         <li>
                             <form action="{% url 'logout' %}" method="post">
                                 {% csrf_token %}
-                                <button type="submit" class="dropdown-item d-flex align-items-center rounded-3 py-2">
-                                    <!-- Logout SVG -->
-                                    <svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium ps-1"
-                                        style="width: 24px; height: 24px" focusable="false" aria-hidden="true"
-                                        viewBox="0 0 24 24">
-                                        <path
-                                            d="m17 8-1.41 1.41L17.17 11H9v2h8.17l-1.58 1.58L17 16l4-4zM5 5h7V3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h7v-2H5z">
-                                        </path>
-                                    </svg>
-                                    <span class="ms-3 fw-medium">Log Out</span>
+                                <button type="submit"
+                                    class="dropdown-item d-flex align-items-center rounded-3 py-2 px-3 fw-medium text-danger">
+                                    <i class="bi bi-box-arrow-right fs-5 me-3"></i> Log Out
                                 </button>
                             </form>
                         </li>
@@ -124,10 +118,14 @@
 
                 {% else %}
                 <!-- Guest Actions -->
-                <a href="{% url 'login' %}" class="fw-bold text-dark text-decoration-none me-2">Log In</a>
-                <a href="{% url 'register' %}" class="btn btn-success rounded-pill px-4 btn-sm fw-bold">Sign Up</a>
+                <a href="{% url 'login' %}" class="fw-bold text-dark text-decoration-none me-3">Log In</a>
+                <a href="{% url 'register' %}" class="btn btn-modern rounded-pill px-4 btn-sm fw-bold shadow-sm">Sign
+                    Up</a>
                 {% endif %}
             </div>
         </div>
     </div>
 </nav>
+
+<!-- Spacer for fixed navbar -->
+<div style="height: 80px;"></div>

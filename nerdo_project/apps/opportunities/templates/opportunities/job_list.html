@@ -3,112 +3,162 @@
 {% block content %}
 <style>
     /* --- LAYOUT ARCHITECTURE --- */
-    /* Make the container fill the screen height minus the navbar/padding */
     .master-detail-container {
-        height: calc(100vh - 140px); 
-        overflow: hidden; /* Prevent body scroll */
+        height: calc(100vh - 120px);
+        overflow: hidden;
     }
 
     /* --- SCROLLABLE COLUMNS --- */
     .scroll-area {
         height: 100%;
         overflow-y: auto;
-        -webkit-overflow-scrolling: touch; /* Smooth scroll on iOS */
-        scrollbar-width: none; /* Firefox: Hide scrollbar */
-        -ms-overflow-style: none; /* IE/Edge */
-        padding-bottom: 50px; /* Space for bottom elements */
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        /* Firefox */
+        -ms-overflow-style: none;
+        /* IE/Edge */
+        padding-bottom: 80px;
     }
 
-    /* Hide Scrollbar for Chrome/Safari/Edge */
-    .scroll-area::-webkit-scrollbar { 
-        display: none; 
+    .scroll-area::-webkit-scrollbar {
+        display: none;
+        /* Chrome/Safari */
     }
 
     /* --- JOB CARD STYLING --- */
     .job-card {
-        transition: all 0.2s ease;
-        border-left: 4px solid transparent;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 1px solid transparent;
         cursor: pointer;
-    }
-    
-    .job-card:hover {
-        background-color: rgba(255,255,255, 0.6) !important;
-        transform: translateX(2px);
+        background: rgba(255, 255, 255, 0.6);
+        backdrop-filter: blur(4px);
     }
 
-    /* Active State (The clicked job) */
+    .job-card:hover {
+        background: rgba(255, 255, 255, 0.9);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        z-index: 10;
+        border-color: #10b981;
+        /* Green Hover */
+    }
+
     .job-card.active-state {
-        background-color: #fff !important;
-        border-left-color: #198754; /* Bootstrap Success Color */
-        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        background: white;
+        border-left: 4px solid #10b981;
+        /* Green Active */
+        box-shadow: 0 4px 20px rgba(16, 185, 129, 0.15);
     }
 
     /* --- FILTER PILLS --- */
     .filter-bar {
         overflow-x: auto;
         white-space: nowrap;
-        scrollbar-width: none; /* Hide scrollbar for cleaner look */
-        -ms-overflow-style: none; 
+        scrollbar-width: none;
+        -ms-overflow-style: none;
         padding-bottom: 5px;
+        mask-image: linear-gradient(to right, black 90%, transparent 100%);
     }
-    .filter-bar::-webkit-scrollbar { display: none; }
+
+    .filter-bar::-webkit-scrollbar {
+        display: none;
+    }
 
     .filter-pill {
         border-radius: 50px;
-        padding: 6px 16px;
+        padding: 8px 18px;
         font-size: 0.85rem;
-        font-weight: 500;
+        font-weight: 600;
         white-space: nowrap;
         transition: all 0.2s;
-        border: 1px solid rgba(0,0,0,0.1);
-        background: rgba(255,255,255,0.4);
-        backdrop-filter: blur(4px);
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(8px);
+        color: #64748b;
     }
-    .filter-pill:hover { background: rgba(255,255,255,0.8); }
+
+    .filter-pill:hover {
+        background: white;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        color: #064e3b;
+        /* Dark Green */
+        border-color: #10b981;
+    }
+
     .filter-pill.active {
-        background-color: #198754;
+        background: #064e3b;
+        /* Dark Jungle Green */
         color: white;
-        border-color: #198754;
+        border-color: #064e3b;
+        box-shadow: 0 4px 10px rgba(6, 78, 59, 0.3);
+    }
+
+    /* MOBILE TOGGLE LOGIC */
+    @media (max-width: 767.98px) {
+        .mobile-show-detail .job-list-pane {
+            display: none !important;
+        }
+
+        .mobile-show-detail .job-detail-pane {
+            display: block !important;
+        }
+
+        .master-detail-container {
+            height: auto;
+            overflow: visible;
+        }
+
+        .scroll-area {
+            height: auto;
+            overflow: visible;
+        }
+
+        /* Ensure details are visible on mobile if selected */
+        .job-detail-pane {
+            display: none;
+            /* Hidden by default on mobile unless toggled */
+        }
     }
 </style>
 
 <div class="container-fluid px-md-4" style="max-width: 1600px;">
-    
+
     <!-- 1. HEADER & FILTERS -->
-    <div class="mb-3">
+    <div class="mb-4 {% if selected_job and request.GET.job_id %}d-none d-md-block{% endif %}">
+        <!-- Hide filters on mobile detail view -->
         <form method="GET" action="{% url 'job_market' %}">
-            <div class="row g-2 align-items-center">
+            <div class="row g-3 align-items-center">
                 <!-- Search Bar -->
                 <div class="col-md-4">
-                    <div class="input-group shadow-sm">
-                        <span class="input-group-text bg-white border-end-0 ps-3"><i class="bi bi-search text-muted"></i></span>
-                        <input type="text" name="q" class="form-control border-start-0 py-2" placeholder="Job title, keywords, or company" value="{{ request.GET.q|default:'' }}">
+                    <div class="input-group shadow-sm rounded-pill overflow-hidden bg-white">
+                        <span class="input-group-text bg-white border-0 ps-3 text-secondary"><i
+                                class="bi bi-search"></i></span>
+                        <input type="text" name="q" class="form-control border-0 py-2 shadow-none"
+                            placeholder="Search jobs, skills, companies..." value="{{ request.GET.q|default:'' }}">
                     </div>
                 </div>
 
                 <!-- Filter Pills (Scrollable) -->
                 <div class="col-md-8">
-                    <!-- Added custom class filter-bar which handles the scrolling -->
-                    <div class="filter-bar d-flex gap-2">
-                        <!-- Submit form on click by using javascript or just links since it's GET -->
-                        <a href="?" class="filter-pill text-decoration-none text-dark {% if not request.GET.category %}active{% endif %}">
+                    <div class="filter-bar d-flex gap-2 align-items-center h-100">
+                        <a href="?"
+                            class="filter-pill text-decoration-none {% if not request.GET.category %}active{% endif %}">
                             All Jobs
                         </a>
-                        
-                        <!-- Categories -->
+
                         {% for code, name in categories %}
-                        <a href="?category={{ code }}&q={{ request.GET.q|default:'' }}" 
-                           class="filter-pill text-decoration-none text-dark {% if request.GET.category == code %}active{% endif %}">
+                        <a href="?category={{ code }}&q={{ request.GET.q|default:'' }}"
+                            class="filter-pill text-decoration-none {% if request.GET.category == code %}active{% endif %}">
                             {{ name }}
                         </a>
                         {% endfor %}
 
-                        <div class="vr mx-1 opacity-25"></div>
+                        <div class="vr mx-2 bg-secondary opacity-25" style="height: 20px;"></div>
 
-                        <!-- Levels -->
                         {% for code, name in levels %}
-                        <a href="?level={{ code }}&q={{ request.GET.q|default:'' }}" 
-                           class="filter-pill text-decoration-none text-dark {% if request.GET.level == code %}active{% endif %}">
+                        <a href="?level={{ code }}&q={{ request.GET.q|default:'' }}"
+                            class="filter-pill text-decoration-none {% if request.GET.level == code %}active{% endif %}">
                             {{ name }}
                         </a>
                         {% endfor %}
@@ -119,139 +169,160 @@
     </div>
 
     <!-- 2. MASTER-DETAIL LAYOUT -->
-    <div class="row g-0 master-detail-container bg-glass rounded-4 shadow-sm border overflow-hidden">
-        
+    <!-- Helper Class Toggle for Mobile -->
+    <div
+        class="row g-0 master-detail-container bg-glass rounded-4 shadow-lg border border-white border-opacity-50 overflow-hidden {% if selected_job and request.GET.job_id %}mobile-show-detail{% endif %}">
+
         <!-- LEFT: JOB LIST -->
-        <div class="col-lg-4 col-md-5 border-end bg-light bg-opacity-25 scroll-area">
-            
+        <div class="col-md-5 col-lg-4 border-end bg-light-subtle scroll-area job-list-pane">
+
             <!-- List Header -->
-            <div class="p-3 border-bottom bg-white bg-opacity-75 sticky-top z-1 backdrop-blur d-flex justify-content-between align-items-center">
-                <span class="small fw-bold text-muted">{{ jobs.count }} results found</span>
-                <span class="small text-muted"><i class="bi bi-sort-down"></i> Most Relevant</span>
+            <div
+                class="px-4 py-3 border-bottom bg-white bg-opacity-90 sticky-top z-1 backdrop-blur d-flex justify-content-between align-items-center">
+                <span class="small fw-bold text-dark"><i class="bi bi-list-ul me-1"></i> {{ jobs.count }} Jobs
+                    Found</span>
             </div>
 
             <!-- List Content -->
-            <div class="list-group list-group-flush">
+            <div class="list-group list-group-flush p-2 gap-2">
                 {% for job in jobs %}
-                <a href="?job_id={{ job.id }}&q={{ request.GET.q|default:'' }}&category={{ request.GET.category|default:'' }}" 
-                   class="list-group-item list-group-item-action p-3 border-bottom job-card bg-transparent {% if selected_job.id == job.id %}active-state{% endif %}">
-                    
-                    <div class="d-flex justify-content-between mb-1">
-                        <small class="fw-bold text-success">{{ job.get_category_display }}</small>
-                        <small class="text-muted" style="font-size: 0.75rem;">{{ job.created_at|timesince }} ago</small>
+                <a href="?job_id={{ job.id }}&q={{ request.GET.q|default:'' }}&category={{ request.GET.category|default:'' }}"
+                    class="list-group-item list-group-item-action p-3 rounded-3 job-card {% if selected_job.id == job.id %}active-state{% endif %}">
+
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-white text-dark border shadow-sm rounded-pill fw-medium small px-2">
+                            {{ job.get_category_display }}
+                        </span>
+                        <small class="text-secondary" style="font-size: 0.75rem;">
+                            <i class="bi bi-clock me-1"></i>{{ job.created_at|timesince }}
+                        </small>
                     </div>
 
-                    <h6 class="mb-1 text-dark fw-bold text-truncate">{{ job.title }}</h6>
-                    <p class="mb-2 small text-muted text-truncate">{{ job.author.username }} • {{ job.get_job_type_display }}</p>
+                    <h6 class="mb-1 text-dark fw-bold text-truncate tracking-tight">{{ job.title }}</h6>
+                    <p class="mb-2 small text-muted text-truncate">
+                        <span class="fw-medium text-success">{{ job.author.username }}</span> • {{job.get_job_type_display }}
+                    </p>
 
-                    <div class="d-flex gap-2">
-                        <span class="badge bg-light text-dark border fw-normal">KES {{ job.budget }}</span>
-                        <span class="badge bg-light text-dark border fw-normal">{{ job.get_experience_level_display }}</span>
+                    <div class="d-flex gap-2 mt-2">
+                        <span
+                            class="badge bg-success-subtle text-success border border-success-subtle fw-bold rounded px-2">
+                            KES {{ job.budget }}
+                        </span>
                     </div>
                 </a>
                 {% empty %}
                 <div class="text-center p-5 mt-5">
-                    <div class="mb-3 text-muted opacity-50"><i class="bi bi-search" style="font-size: 3rem;"></i></div>
-                    <h5>No jobs found</h5>
-                    <p class="text-muted small">Try adjusting your search filters.</p>
-                    <a href="{% url 'job_market' %}" class="btn btn-sm btn-outline-success">Clear Filters</a>
+                    <div class="mb-3 text-secondary opacity-25">
+                        <i class="bi bi-search display-1"></i>
+                    </div>
+                    <h5 class="fw-bold text-dark">No jobs found</h5>
+                    <a href="{% url 'job_market' %}" class="btn btn-sm btn-outline-dark rounded-pill px-4">Clear
+                        Filters</a>
                 </div>
                 {% endfor %}
             </div>
         </div>
 
         <!-- RIGHT: JOB DETAILS (Sticky) -->
-        <div class="col-lg-8 col-md-7 bg-white scroll-area position-relative d-none d-md-block">
+        <div class="col-md-7 col-lg-8 bg-white scroll-area position-relative job-detail-pane">
             {% if selected_job %}
-                <!-- Hero Image / Banner (Optional, using a gradient placeholder) -->
-                <div class="w-100" style="height: 120px; background: linear-gradient(135deg, #e9f7ef 0%, #d4edda 100%);"></div>
-                
-                <div class="px-5" style="margin-top: -40px;">
-                    <!-- Job Header Card -->
-                    <div class="card border-0 shadow-sm p-4 mb-4">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <div>
-                                <div class="bg-white rounded-3 shadow-sm d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
-                                    <span class="fw-bold fs-3 text-success">{{ selected_job.title|slice:":1" }}</span>
+
+            <!-- MOBILE BACK BUTTON -->
+            <div class="d-md-none p-3 border-bottom bg-white sticky-top z-2">
+                <a href="{% url 'job_market' %}" class="btn btn-light rounded-pill fw-bold text-secondary shadow-sm">
+                    <i class="bi bi-arrow-left me-1"></i> Back to Jobs
+                </a>
+            </div>
+
+            <!-- Hero Header -->
+            <div class="w-100 position-relative"
+                style="height: 160px; background: linear-gradient(135deg, #064e3b 0%, #10b981 100%);">
+                <div class="position-absolute top-0 start-0 w-100 h-100 opacity-25"
+                    style="background-image: radial-gradient(#ffffff 1px, transparent 1px); background-size: 20px 20px;">
+                </div>
+            </div>
+
+            <div class="px-4 px-md-5 pb-5" style="margin-top: -60px;">
+                <!-- Job Header Card -->
+                <div class="card border-0 shadow-lg rounded-4 p-4 mb-4 bg-white">
+                    <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
+                        <div>
+                            <div class="bg-white rounded-3 shadow-md d-inline-flex align-items-center justify-content-center mb-3 border border-light"
+                                style="width: 72px; height: 72px;">
+                                <span class="fw-bold fs-2 text-success">{{ selected_job.title|slice:":1" }}</span>
+                            </div>
+                            <h2 class="fw-bold mb-1 text-dark tracking-tight">{{ selected_job.title }}</h2>
+                            <div class="d-flex align-items-center gap-3 text-secondary small fw-medium flex-wrap">
+                                <span><i class="bi bi-building me-1"></i> {{ selected_job.author.username }}</span>
+                                <span><i class="bi bi-geo-alt me-1"></i> Remote</span>
+                            </div>
+                        </div>
+
+                        <div class="d-flex flex-column gap-2 align-items-end mt-2">
+                            {% if user == selected_job.author %}
+                            <a href="{% url 'update_job' selected_job.id %}"
+                                class="btn btn-outline-success btn-sm px-4 rounded-pill fw-bold">Edit Job</a>
+                            <a href="{% url 'delete_job' selected_job.id %}"
+                                class="btn btn-outline-danger btn-sm px-4 rounded-pill fw-bold">Delete</a>
+                            {% else %}
+                            <form action="{% url 'apply_job' selected_job.id %}" method="POST">
+                                {% csrf_token %}
+                                <button class="btn btn-modern rounded-pill px-5 py-2 fw-bold shadow-md">
+                                    Apply Now <i class="bi bi-send-fill ms-2"></i>
+                                </button>
+                            </form>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Description & Sidebar -->
+                <div class="row g-4">
+                    <div class="col-xl-8">
+                        <h5 class="fw-bold mb-3 d-flex align-items-center gap-2 text-dark">
+                            <i class="bi bi-file-text text-success"></i> About the job
+                        </h5>
+                        <div class="text-secondary lh-lg mb-5 fs-6" style="white-space: pre-line;">
+                            {{ selected_job.description }}
+                        </div>
+                    </div>
+
+                    <!-- Sidebar Info -->
+                    <div class="col-xl-4">
+                        <div class="card bg-light-subtle border-0 rounded-4 p-4 sticky-top" style="top: 20px;">
+                            <h6 class="fw-bold mb-4 text-uppercase small ls-1 text-secondary">Job Overview</h6>
+
+                            <div class="d-flex flex-column gap-3">
+                                <div
+                                    class="d-flex align-items-center justify-content-between p-3 bg-white rounded-3 shadow-sm border border-light">
+                                    <span class="text-secondary"><i class="bi bi-calendar3 me-2"></i> Posted</span>
+                                    <span class="fw-bold text-dark">{{ selected_job.created_at|date:"M d, Y" }}</span>
                                 </div>
-                                <h2 class="fw-bold mb-1">{{ selected_job.title }}</h2>
-                                <p class="text-muted mb-3">
-                                    <i class="bi bi-building"></i> {{ selected_job.author.username }} 
-                                    <span class="mx-2">•</span> 
-                                    <i class="bi bi-geo-alt"></i> Remote
-                                    <span class="mx-2">•</span>
-                                    <span class="text-success fw-bold">Active</span>
-                                </p>
-                            </div>
-                            
-                            <div class="d-flex flex-column gap-2 align-items-end">
-                                {% if user == selected_job.author %}
-                                    <a href="{% url 'update_job' selected_job.id %}" class="btn btn-outline-primary btn-sm px-3 rounded-pill">Edit Job</a>
-                                    <a href="{% url 'delete_job' selected_job.id %}" class="btn btn-outline-danger btn-sm px-3 rounded-pill">Delete</a>
-                                {% else %}
-                                    <form action="{% url 'apply_job' selected_job.id %}" method="POST">
-                                        {% csrf_token %}
-                                        <button class="btn btn-success rounded-pill px-4 fw-bold shadow-sm">
-                                            Apply Now <i class="bi bi-box-arrow-up-right ms-1"></i>
-                                        </button>
-                                    </form>
-                                {% endif %}
-                            </div>
-                        </div>
-
-                        <div class="d-flex gap-4 mt-3 pt-3 border-top">
-                            <div>
-                                <small class="text-muted d-block text-uppercase" style="font-size: 0.7rem;">Budget</small>
-                                <span class="fw-bold">KES {{ selected_job.budget }}</span>
-                            </div>
-                            <div>
-                                <small class="text-muted d-block text-uppercase" style="font-size: 0.7rem;">Level</small>
-                                <span class="fw-bold">{{ selected_job.get_experience_level_display }}</span>
-                            </div>
-                            <div>
-                                <small class="text-muted d-block text-uppercase" style="font-size: 0.7rem;">Type</small>
-                                <span class="fw-bold">{{ selected_job.get_job_type_display }}</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Description -->
-                    <div class="row">
-                        <div class="col-lg-8">
-                            <h5 class="fw-bold mb-3">About the job</h5>
-                            <div class="text-secondary lh-lg mb-5" style="white-space: pre-line;">
-                                {{ selected_job.description }}
-                            </div>
-                        </div>
-                        
-                        <!-- Sidebar Info -->
-                        <div class="col-lg-4">
-                            <div class="card bg-light border-0 p-3">
-                                <h6 class="fw-bold mb-3">Job Overview</h6>
-                                <ul class="list-unstyled small text-muted mb-0 d-flex flex-column gap-2">
-                                    <li class="d-flex justify-content-between">
-                                        <span>Posted:</span>
-                                        <span class="text-dark">{{ selected_job.created_at|date:"M d, Y" }}</span>
-                                    </li>
-                                    <li class="d-flex justify-content-between">
-                                        <span>Deadline:</span>
-                                        <span class="text-danger fw-bold">{{ selected_job.deadline }}</span>
-                                    </li>
-                                    <li class="d-flex justify-content-between">
-                                        <span>Applicants:</span>
-                                        <span class="text-dark">{{ selected_job.applications.count }}</span>
-                                    </li>
-                                </ul>
+                                <div
+                                    class="d-flex align-items-center justify-content-between p-3 bg-white rounded-3 shadow-sm border border-light">
+                                    <span class="text-secondary"><i class="bi bi-wallet2 me-2"></i> Budget</span>
+                                    <span class="fw-bold text-success">KES {{ selected_job.budget }}</span>
+                                </div>
+                                <div
+                                    class="d-flex align-items-center justify-content-between p-3 bg-white rounded-3 shadow-sm border border-light">
+                                    <span class="text-secondary"><i class="bi bi-people me-2"></i> Applicants</span>
+                                    <span class="badge bg-success text-white rounded-pill px-3">{{selected_job.applications.count }}</span>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
+            </div>
             {% else %}
-                <div class="h-100 d-flex flex-column align-items-center justify-content-center text-muted">
-                    <img src="https://cdn-icons-png.flaticon.com/512/7486/7486744.png" width="120" class="opacity-25 mb-3" alt="Select Job">
-                    <h4>Select a job to view details</h4>
-                    <p>Click on any job card from the list on the left.</p>
+            <!-- Empty State -->
+            <div
+                class="h-100 d-flex flex-column align-items-center justify-content-center text-muted p-5 text-center job-detail-pane">
+                <div class="bg-light rounded-circle p-4 mb-4">
+                    <i class="bi bi-mouse3 opacity-25 display-1"></i>
                 </div>
+                <h3 class="fw-bold text-dark">Select a job</h3>
+                <p class="text-secondary">Click any job to see details.</p>
+            </div>
             {% endif %}
         </div>
     </div>

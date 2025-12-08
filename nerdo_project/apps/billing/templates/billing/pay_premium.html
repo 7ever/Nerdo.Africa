@@ -2,32 +2,115 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-5">
-        <div class="card shadow border-success p-4 bg-glass">
-            <div class="text-center mb-4">
-                <h2 class="text-success fw-bold">Get Verified </h2>
-                <p class="text-muted">Unlock premium badges for <strong>KES 1</strong></p>
+<div class="container d-flex flex-column justify-content-center align-items-center" style="min-height: 80vh;">
+
+    <div class="col-md-6 col-lg-5 col-xl-4 fade-in-up">
+        <!-- Brand Header for visual context -->
+        <div class="text-center mb-4">
+            <h1 class="fw-bold tracking-tight text-dark">Premium Access</h1>
+            <p class="text-secondary">Upgrade your professional profile today.</p>
+        </div>
+
+        <!-- Glassmorphism Card -->
+        <div class="card border-0 shadow-lg rounded-4 overflow-hidden bg-glass position-relative">
+            <!-- Decorative Header Gradient -->
+            <div class="position-absolute top-0 start-0 w-100 h-100"
+                style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, rgba(5, 150, 105, 0.05) 100%); pointer-events: none;">
             </div>
-            
-            <form method="POST">
-                <!-- Security: CSRF Token is MANDATORY for POST requests -->
-                {% csrf_token %}
-                
-                <!-- Display the Phone Input Field from PaymentForm -->
-                {{ form|crispy }}
-                
-                <div class="d-grid mt-4">
-                    <button type="submit" class="btn btn-success btn-lg fw-bold shadow-sm">
-                        Pay with M-Pesa
-                    </button>
+
+            <div class="card-body p-4 p-md-5 position-relative z-1">
+
+                <div class="text-center mb-5">
+                    <!-- Icon -->
+                    <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-3 shadow-sm"
+                        style="width: 80px; height: 80px; background: linear-gradient(135deg, #d1fae5, #ecfdf5); color: #059669;">
+                        <i class="bi bi-patch-check-fill fs-1"></i>
+                    </div>
+
+                    <h3 class="fw-bold text-dark mb-2">Get Verified</h3>
+                    <p class="text-secondary mb-3 small">
+                        Stand out to employers with a verified badge.
+                    </p>
+
+                    <div class="d-inline-block bg-success-subtle border border-success-subtle rounded-pill px-4 py-2">
+                        <span class="text-success fw-bold small text-uppercase ls-1">On Sale</span>
+                        <span class="mx-2 text-dark opacity-25">|</span>
+                        <span class="fs-5 fw-bold text-dark">KES 1</span>
+                    </div>
                 </div>
-            </form>
-            
-            <div class="text-center mt-3">
-                <small class="text-muted">You will receive an M-Pesa prompt on your phone.</small>
+
+                <form method="POST">
+                    {% csrf_token %}
+
+                    <div class="mb-4">
+                        <label class="form-label small fw-bold text-secondary text-uppercase mb-2">Phone Number</label>
+                        {{ form|crispy }}
+                        <div class="form-text text-muted small"><i class="bi bi-shield-lock me-1"></i> Secure M-Pesa
+                            Transaction</div>
+                    </div>
+
+                    <div class="d-grid">
+                        <button type="submit"
+                            class="btn btn-modern rounded-pill py-3 fw-bold shadow-md hover-scale transition-transform">
+                            Pay with M-Pesa <i class="bi bi-phone-vibrate ms-2"></i>
+                        </button>
+                    </div>
+                </form>
+
+                <div class="text-center mt-4">
+                    <small class="text-secondary opacity-75">
+                        <i class="bi bi-info-circle me-1"></i> You will receive an M-Pesa prompt on your phone.
+                    </small>
+                </div>
             </div>
+        </div>
+
+        <!-- Footer Link -->
+        <div class="text-center mt-4">
+            <a href="{% url 'profile' %}" class="text-decoration-none text-secondary small fw-medium hover-underline">
+                <i class="bi bi-arrow-left me-1"></i> Skip for now
+            </a>
         </div>
     </div>
 </div>
+
+<style>
+    /* Clean up crispy form styling within the card */
+    .asteriskField {
+        color: #ef4444;
+        /* Red asterisk */
+    }
+
+    label {
+        font-size: 0.85rem;
+    }
+
+    .hover-scale:hover {
+        transform: translateY(-2px);
+    }
+
+    .transition-transform {
+        transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .ls-1 {
+        letter-spacing: 1px;
+    }
+
+    .fade-in-up {
+        animation: fadeInUp 0.6s ease-out;
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
 {% endblock %}

@@ -12,7 +12,8 @@ def is_verified_employer(user):
 # 1. SPLIT VIEW: JOB MARKET WITH SEARCH & FILTERS
 def job_market(request):
     # Start with all APPROVED jobs
-    jobs = Job.objects.filter(is_approved=True)
+    # Optimized: Fetch author efficiently
+    jobs = Job.objects.filter(is_approved=True).select_related('author')
     
     # --- SEARCH & FILTER LOGIC ---
     query = request.GET.get('q')
@@ -40,15 +41,13 @@ def job_market(request):
     # Check if a specific job was clicked via ?job_id=...
     selected_job_id = request.GET.get('job_id')
     
+    selected_job = None
     if selected_job_id:
         # Allow selecting unapproved jobs IF you are the author (preview)
-        # But generally for public market, just query from 'jobs' queryset? 
-        # Better to just use get_object_or_404 but catch permissions if needed.
-        # For simplicity in this split view, strict filter:
-        selected_job = get_object_or_404(Job, pk=selected_job_id)
+        selected_job = get_object_or_404(Job.objects.select_related('author').prefetch_related('applications'), pk=selected_job_id)
     else:
         # Default to the first job in the filtered list
-        selected_job = jobs.first() if jobs.exists() else None
+        selected_job = jobs.prefetch_related('applications').first() if jobs.exists() else None
 
     context = {
         "jobs": jobs,
@@ -62,8 +61,10 @@ def job_market(request):
 
 # 2. READ ONE (Details Page - Mobile Fallback)
 def job_detail(request, pk):
-    job = get_object_or_404(Job, pk=pk)
+    # Optimized: Fetch author and applications
+    job = get_object_or_404(Job.objects.select_related('author').prefetch_related('applications'), pk=pk)
     context = {"job": job}
+
     return render(request, "opportunities/job_detail.html", context)
 
 # 3. CREATE (Restricted to Verify Employer)

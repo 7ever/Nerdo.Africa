@@ -5,59 +5,88 @@
 <style>
     .role-card {
         cursor: pointer;
-        transition: all 0.3s;
-        border: 2px solid #eee;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 2px solid transparent;
+        background: rgba(255, 255, 255, 0.5);
     }
+
     .role-card:hover {
-        border-color: #198754;
-        background-color: #f8fffb;
+        transform: translateY(-5px);
+        background: rgba(255, 255, 255, 0.8);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
     }
+
     .role-card.active {
-        border-color: #198754;
-        background-color: #e6f7ef;
+        border-color: #10b981;
+        background: rgba(255, 255, 255, 0.9);
+        box-shadow: 0 10px 20px rgba(16, 185, 129, 0.15);
         position: relative;
     }
+
     .role-card.active::after {
-        content: '✓';
+        content: '\F26B';
+        /* Bootstrap Icons check-circle-fill code */
+        font-family: 'bootstrap-icons';
         position: absolute;
         top: 10px;
         right: 15px;
-        color: #198754;
-        font-weight: bold;
+        color: #10b981;
         font-size: 1.2rem;
     }
-    /* Hide actual radio buttons but keep semantic association */
+
+    .role-icon {
+        width: 48px;
+        height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        margin-bottom: 1rem;
+        transition: all 0.3s;
+    }
+
+    .active .role-icon {
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: white !important;
+    }
+
+    /* Hide actual radio buttons */
     #div_id_role .form-check {
-        display: none; 
+        display: none;
     }
 </style>
 
 <div class="row justify-content-center py-5">
-    <div class="col-md-8 col-lg-6">
-        <div class="card shadow-lg border-0 rounded-3">
+    <div class="col-md-10 col-lg-8 col-xl-6">
+        <div class="card shadow-lg border-0 bg-glass overflow-hidden">
             <div class="card-body p-5">
-                <div class="text-center mb-4">
-                    <h2 class="fw-bold text-success">Create Account</h2>
-                    <p class="text-muted">Join Nerdo.Africa's community of top talent.</p>
+                <div class="text-center mb-5">
+                    <h2 class="fw-bold text-dark tracking-tight">Create Account</h2>
+                    <p class="text-secondary">Join Nerdo.Africa's community of top talent.</p>
                 </div>
 
                 <form method="POST" id="regForm">
                     {% csrf_token %}
-                    
+
                     <!-- Role Selection UI -->
-                    <label class="form-label fw-bold mb-3">I want to...</label>
+                    <label class="form-label fw-bold mb-3 text-uppercase small text-secondary ls-1">I want to...</label>
                     <div class="row g-3 mb-4">
                         <div class="col-6">
-                            <div class="card p-3 text-center role-card active" onclick="selectRole('job_seeker')">
-                                <div class="mb-2">👨‍💻</div>
-                                <div class="fw-bold">Find Work</div>
+                            <div class="card p-4 text-center role-card active border-0"
+                                onclick="selectRole('job_seeker')">
+                                <div class="role-icon mx-auto bg-light text-primary">
+                                    <i class="bi bi-person-workspace fs-4"></i>
+                                </div>
+                                <div class="fw-bold text-dark">Find Work</div>
                                 <small class="text-muted">As a Job Seeker</small>
                             </div>
                         </div>
                         <div class="col-6">
-                            <div class="card p-3 text-center role-card" onclick="selectRole('employer')">
-                                <div class="mb-2">💼</div>
-                                <div class="fw-bold">Hire Talent</div>
+                            <div class="card p-4 text-center role-card border-0" onclick="selectRole('employer')">
+                                <div class="role-icon mx-auto bg-light text-success">
+                                    <i class="bi bi-building-check fs-4"></i>
+                                </div>
+                                <div class="fw-bold text-dark">Hire Talent</div>
                                 <small class="text-muted">As an Employer</small>
                             </div>
                         </div>
@@ -68,34 +97,41 @@
                         {{ form.role }}
                     </div>
 
-                    <div class="row">
+                    <div class="row g-3">
                         <div class="col-md-6">
                             {{ form.first_name|as_crispy_field }}
                         </div>
                         <div class="col-md-6">
-                             {{ form.last_name|as_crispy_field }}
+                            {{ form.last_name|as_crispy_field }}
                         </div>
                     </div>
 
                     {{ form.username|as_crispy_field }}
                     {{ form.email|as_crispy_field }}
                     {{ form.phone_number|as_crispy_field }}
-                    
-                    <!-- Password Field Manual Render (if needed to group) -->
-                    {{ form.password1|as_crispy_field }}
-                    {{ form.password2|as_crispy_field }}
 
-                    <div id="ajira-field">
+                    <div class="row g-3">
+                        <div class="col-md-6">{{ form.password1|as_crispy_field }}</div>
+                        <div class="col-md-6">{{ form.password2|as_crispy_field }}</div>
+                    </div>
+
+                    <div id="ajira-field" class="fade-in-up">
                         {{ form.ajira_id|as_crispy_field }}
                     </div>
 
                     <div class="d-grid mt-4">
-                        <button class="btn btn-success btn-lg shadow-sm" type="submit">Create Account</button>
+                        <button class="btn btn-modern btn-lg rounded-pill shadow-lg fw-bold py-3" type="submit">
+                            Get Started <i class="bi bi-arrow-right-short fs-4 align-middle ms-1"></i>
+                        </button>
                     </div>
                 </form>
 
                 <div class="text-center mt-4">
-                    <small>Already have an account? <a href="{% url 'login' %}" class="text-decoration-none fw-bold">Log In</a></small>
+                    <p class="text-muted small">
+                        Already have an account?
+                        <a href="{% url 'login' %}"
+                            class="text-decoration-none fw-bold text-success hover-underline">Log In</a>
+                    </p>
                 </div>
             </div>
         </div>
@@ -105,23 +141,41 @@
 <script>
     function selectRole(role) {
         // 1. Update Visuals
-        document.querySelectorAll('.role-card').forEach(el => el.classList.remove('active'));
-        if (role === 'job_seeker') {
-            document.querySelectorAll('.role-card')[0].classList.add('active');
-            document.getElementById('ajira-field').style.display = 'block';
-        } else {
-            document.querySelectorAll('.role-card')[1].classList.add('active');
-            document.getElementById('ajira-field').style.display = 'none';
-        }
+        const cards = document.querySelectorAll('.role-card');
+        cards.forEach(el => el.classList.remove('active'));
 
-        // 2. Select underlying radio button
-        // Django renders radio choices with id_role_0, id_role_1 etc.
-        // Assuming job_seeker is first (0) and employer is second (1)
+        const ajiraField = document.getElementById('ajira-field');
+
         if (role === 'job_seeker') {
+            cards[0].classList.add('active');
+            ajiraField.style.display = 'block';
             document.getElementById('id_role_0').checked = true;
         } else {
+            cards[1].classList.add('active');
+            ajiraField.style.display = 'none';
             document.getElementById('id_role_1').checked = true;
         }
     }
 </script>
+<style>
+    .ls-1 {
+        letter-spacing: 1px;
+    }
+
+    .fade-in-up {
+        animation: fadeIn 0.5s ease-out;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
 {% endblock %}

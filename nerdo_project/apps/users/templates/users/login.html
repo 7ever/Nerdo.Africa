@@ -2,31 +2,55 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-5">
-        <div class="card shadow-sm border-0 bg-glass">
-            <div class="card-body p-4">
-                <h3 class="mb-3 text-center fw-bold">Welcome Back</h3>
+<div class="row justify-content-center align-items-center" style="min-height: 80vh;">
+    <div class="col-md-5 col-lg-4">
+        <div class="card border-0 shadow-lg bg-glass overflow-hidden">
+            <div class="card-body p-5">
+                <div class="text-center mb-4">
+                    <div class="bg-success text-white rounded-3 d-flex align-items-center justify-content-center shadow-lg mx-auto mb-3"
+                        style="width: 64px; height: 64px; background: linear-gradient(135deg, #10b981, #059669) !important;">
+                        <span class="fs-2 fw-bold">N</span>
+                    </div>
+                    <h3 class="fw-bold text-dark tracking-tight">Welcome Back</h3>
+                    <p class="text-muted small">Sign in to continue your journey</p>
+                </div>
+
                 <form method="POST">
                     {% csrf_token %}
                     {{ form|crispy }}
-                    
+
                     <div class="d-grid mt-4">
-                        <button class="btn btn-success fw-bold" type="submit">Login</button>
+                        <button class="btn btn-modern fw-bold py-2 rounded-pill shadow-sm" type="submit">
+                            Sign In <i class="bi bi-arrow-right ms-2"></i>
+                        </button>
                     </div>
                 </form>
-                
-                <div class="d-flex justify-content-between mt-3 align-items-center">
-                    <!-- Forgot Password Link -->
-                    <a href="{% url 'password_reset' %}" class="text-decoration-none small text-muted">
-                        Forgot Password?
-                    </a>
-                    
-                    <!-- Register Link -->
-                    <small>New here? <a href="{% url 'register' %}" class="text-success fw-bold text-decoration-none">Join Now</a></small>
+
+                <div class="text-center mt-4 pt-3 border-top border-light-subtle">
+                    <p class="mb-2">
+                        <a href="{% url 'password_reset' %}"
+                            class="text-decoration-none text-secondary small hover-underline">
+                            <i class="bi bi-key me-1"></i> Forgot Password?
+                        </a>
+                    </p>
+                    <p class="small text-muted mb-0">
+                        Don't have an account?
+                        <a href="{% url 'register' %}"
+                            class="text-success fw-bold text-decoration-none hover-underline">Create Account</a>
+                    </p>
                 </div>
             </div>
         </div>
+
+        <div class="text-center mt-4">
+            <p class="small text-muted opacity-75">&copy; 2025 Nerdo.Africa</p>
+        </div>
     </div>
 </div>
+
+<style>
+    .hover-underline:hover {
+        text-decoration: underline !important;
+    }
+</style>
 {% endblock %}
