@@ -29,6 +29,7 @@ class Profile(models.Model):
     is_verified = models.BooleanField(default=False) 
     is_phone_verified = models.BooleanField(default=False) # New flag
     is_employer_verified = models.BooleanField(default=False, help_text="Designates if this employer can post jobs.")
+    is_premium = models.BooleanField(default=False, help_text="Designates if the user has paid for premium access.")
 
     bio = models.TextField(blank=True, max_length=500)
 

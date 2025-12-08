@@ -1,0 +1,144 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row align-items-center mb-5 fade-in-up">
+        <div class="col-lg-8">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-3">
+                    <li class="breadcrumb-item"><a href="{% url 'learning_home' %}"
+                            class="text-secondary text-decoration-none small fw-bold">LEARNING</a></li>
+                    <li class="breadcrumb-item active fw-bold text-dark" aria-current="page">HISTORY</li>
+                </ol>
+            </nav>
+            <h1 class="display-5 fw-bolder text-dark mb-2 tracking-tight">Your Learning Journey</h1>
+            <p class="lead text-muted fw-normal">Track your progress across all generated roadmaps.</p>
+        </div>
+    </div>
+
+    {% if learning_paths %}
+    <div class="row g-4 mb-5 fade-in-up" style="animation-delay: 0.1s;">
+        {% for path in learning_paths %}
+        <div class="col-md-6 col-lg-4">
+            <a href="{% url 'roadmap_view_id' path.id %}" class="text-decoration-none">
+                <div class="card h-100 border-0 bg-glass shadow-sm hover-card position-relative overflow-hidden group">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <span class="badge bg-white text-success border shadow-sm rounded-pill px-3">
+                                {{ path.skill_level|title }}
+                            </span>
+                            <small class="text-muted fst-italic">{{ path.created_at|timesince }} ago</small>
+                        </div>
+                        <h5 class="fw-bold text-dark mb-2 text-truncate-2">{{ path.topic }}</h5>
+                        <div class="d-flex align-items-center text-muted small mb-3">
+                            <i class="bi bi-clock me-1"></i> {{ path.duration }} Weeks
+                            <span class="mx-2">•</span>
+                            <span class="text-success fw-medium">Active</span>
+                        </div>
+                        <div class="progress" style="height: 6px;">
+                            <div class="progress-bar bg-success rounded-pill" role="progressbar"
+                                style="width: {% cycle '10' '25' '40' '15' %}%"></div>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-transparent border-0 p-3 pt-0">
+                        <span class="btn btn-link text-success p-0 fw-bold small text-decoration-none">
+                            Continue Learning <i
+                                class="bi bi-arrow-right ms-1 transition-transform group-hover-translate"></i>
+                        </span>
+                    </div>
+                </div>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    {% if learning_paths.has_other_pages %}
+    <div class="d-flex justify-content-center pt-4">
+        <nav aria-label="Page navigation">
+            <ul class="pagination">
+                {% if learning_paths.has_previous %}
+                <li class="page-item">
+                    <a class="page-link border-0 text-dark fw-bold rounded-pill mx-1"
+                        href="?page={{ learning_paths.previous_page_number }}">&laquo; Previous</a>
+                </li>
+                {% endif %}
+
+                <li class="page-item disabled">
+                    <span class="page-link border-0 text-muted mx-1">
+                        Page {{ learning_paths.number }} of {{ learning_paths.paginator.num_pages }}
+                    </span>
+                </li>
+
+                {% if learning_paths.has_next %}
+                <li class="page-item">
+                    <a class="page-link border-0 text-dark fw-bold rounded-pill mx-1"
+                        href="?page={{ learning_paths.next_page_number }}">Next &raquo;</a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+    {% endif %}
+
+    {% else %}
+    <div class="text-center py-5">
+        <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-4"
+            style="width: 80px; height: 80px;">
+            <i class="bi bi-journal-x text-muted fs-1"></i>
+        </div>
+        <h3 class="fw-bold text-dark">No history yet</h3>
+        <p class="text-muted mb-4">You haven't generated any learning roadmaps yet.</p>
+        <a href="{% url 'learning_home' %}" class="btn btn-success rounded-pill px-4 fw-bold">Start Learning</a>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+    /* Reuse styles from home.html */
+    .bg-glass {
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.5);
+    }
+
+    .hover-card {
+        transition: all 0.3s ease;
+    }
+
+    .hover-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.08) !important;
+    }
+
+    .text-truncate-2 {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .group-hover-translate {
+        transition: transform 0.2s ease;
+    }
+
+    .group:hover .group-hover-translate {
+        transform: translateX(4px);
+    }
+
+    .fade-in-up {
+        animation: fadeInUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    @keyframes fadeInUp {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+{% endblock %}
