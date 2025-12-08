@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'apps.users',
     'django_daraja',
     'apps.billing',
+    'apps.learning',
 ]
 
 MIDDLEWARE = [
