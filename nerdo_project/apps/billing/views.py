@@ -33,8 +33,8 @@ def pay_premium(request):
             print(f"Target Phone: {phone_number}")
             print(f"Consumer Key Loaded? {'Yes' if settings.MPESA_CONSUMER_KEY else 'NO (Check .env)'}")
             
-            amount = 1
-            # Sanitize Account Reference (Remove spaces, limit to 12 chars)
+            amount = 130
+            # Sanitize Account Reference (Removes spaces, limit to 12 chars)
             clean_username = request.user.username.replace(' ', '')
             account_reference = f'Nerdo_{clean_username}'[:12]
             transaction_desc = 'PremiumVerification' # No spaces to be safe

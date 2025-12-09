@@ -61,14 +61,13 @@
                     <ul class="dropdown-menu dropdown-menu-lg-end border-0 shadow-lg mt-3 p-2 rounded-4"
                         style="width: 260px; backdrop-filter: blur(20px); background: rgba(255,255,255,0.95);">
                         <li class="mb-2">
-                            <a class="dropdown-item p-3 rounded-3 bg-light-subtle d-flex align-items-center gap-3"
+                            <a class="dropdown-item p-3 rounded-3 bg-light-subtle d-flex align-items-center gap-2"
                                 href="{% url 'profile' %}">
                                 {% if user.profile.avatar and 'avatars/' in user.profile.avatar.url %}
-                                <img src="{{ user.profile.avatar.url }}" class="rounded-circle shadow-sm" width="48"
-                                    height="48">
+                                <img src="{{ user.profile.avatar.url }}" class="rounded-circle shadow-sm" style="width: 60px; height: 48px;"/>
                                 {% else %}
                                 <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center fs-5 fw-bold"
-                                    style="width: 48px; height: 48px; background: linear-gradient(135deg, #10b981, #059669) !important;">
+                                    style="width: 60px; height: 48px; background: linear-gradient(135deg, #10b981, #059669) !important;">
                                     {{ user.username|make_list|first|upper }}
                                 </div>
                                 {% endif %}
