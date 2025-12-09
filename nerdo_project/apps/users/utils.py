@@ -12,9 +12,14 @@ def generate_otp():
     """
     return str(random.randint(100000, 999999))
 
-def send_otp_sms(phone_number, otp):
+def send_otp_sms(phone_number, otp=None, message=None):
     """
-    Sends OTP via Africa's Talking (Sandbox) using a RAW HTTP REQUEST.
+    Sends SMS via Africa's Talking (Sandbox) using a RAW HTTP REQUEST.
+    
+    Args:
+        phone_number (str): The recipient's phone number.
+        otp (str, optional): The OTP code (legacy support).
+        message (str, optional): Custom message text. If None, uses default OTP pattern.
     
     NOTE: usage of 'verify=False' bypasses SSL errors common in Python 3.14 alpha versions.
     This is acceptable for the Sandbox/Dev environment but should be removed for Production.
@@ -46,11 +51,20 @@ def send_otp_sms(phone_number, otp):
         'Accept': 'application/json'
     }
     
+    # Determine message content
+    if message:
+        sms_text = message
+    elif otp:
+        sms_text = f"Your Nerdo.Africa verification code is: {otp}"
+    else:
+        print("--> Error: No message or OTP provided for SMS.")
+        return False
+
     # 4. Construct the Payload (The actual data)
     data = {
         'username': username,
         'to': clean_phone,
-        'message': f"Your Nerdo.Africa verification code is: {otp}"
+        'message': sms_text
     }
     
     try:
