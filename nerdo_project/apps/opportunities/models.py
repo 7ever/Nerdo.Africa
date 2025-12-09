@@ -62,3 +62,14 @@ class Application(models.Model):
 
     def __str__(self):
         return f"{self.applicant.username} -> {self.job.title}"
+
+class JobReminder(models.Model):
+    job = models.ForeignKey(Job, on_delete=models.CASCADE, related_name='reminders')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='job_reminders')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('job', 'user') # Prevent duplicate reminders
+
+    def __str__(self):
+        return f"Reminder: {self.user.username} -> {self.job.title}"

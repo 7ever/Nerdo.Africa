@@ -35,7 +35,7 @@
                     <div class="d-inline-block bg-success-subtle border border-success-subtle rounded-pill px-4 py-2">
                         <span class="text-success fw-bold small text-uppercase ls-1">On Sale</span>
                         <span class="mx-2 text-dark opacity-25">|</span>
-                        <span class="fs-5 fw-bold text-dark">KES 1</span>
+                        <span class="fs-5 fw-bold text-dark">KES 130 ($1)</span>
                     </div>
                 </div>
 
@@ -67,7 +67,8 @@
 
         <!-- Footer Link -->
         <div class="text-center mt-4">
-            <a href="{% url 'profile' %}" class="text-decoration-none text-secondary small fw-medium hover-underline">
+            <a href="{% if request.GET.cancel %}{{ request.GET.cancel }}{% else %}{% url 'profile' %}{% endif %}"
+                class="text-decoration-none text-secondary small fw-medium hover-underline">
                 <i class="bi bi-arrow-left me-1"></i> Skip for now
             </a>
         </div>

@@ -16,7 +16,12 @@
                 <div class="d-flex gap-4 align-items-end">
                     <div class="bg-white rounded-4 shadow-lg d-flex align-items-center justify-content-center border border-light p-4"
                         style="width: 100px; height: 100px;">
+                        {% if job.author.profile.avatar and 'avatars/' in job.author.profile.avatar.url %}
+                        <img src="{{ job.author.profile.avatar.url }}" class="rounded-3 shadow-sm object-fit-cover"
+                            style="width: 100%; height: 100%;" alt="Logo">
+                        {% else %}
                         <span class="fw-bold fs-1 text-primary">{{ job.title|slice:":1" }}</span>
+                        {% endif %}
                     </div>
                     <div class="mb-2">
                         <h1 class="fw-bold text-dark tracking-tight mb-1">{{ job.title }}</h1>
@@ -34,12 +39,14 @@
                     <a href="{% url 'delete_job' job.id %}"
                         class="btn btn-outline-danger rounded-pill px-4 fw-bold ms-2">Delete</a>
                     {% else %}
+                    {% if user.profile.role != 'employer' %}
                     <form action="{% url 'apply_job' job.id %}" method="POST" class="d-inline">
                         {% csrf_token %}
                         <button class="btn btn-modern rounded-pill px-5 py-3 fw-bold shadow-lg">
                             Apply Now <i class="bi bi-send-fill ms-2"></i>
                         </button>
                     </form>
+                    {% endif %}
                     {% endif %}
                 </div>
             </div>

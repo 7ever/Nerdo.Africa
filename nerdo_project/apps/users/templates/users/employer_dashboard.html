@@ -22,128 +22,306 @@
         </div>
     </div>
 
-    {% if not is_verified %}
-    <div class="alert alert-warning border-0 shadow-sm rounded-4 d-flex align-items-center p-4 mb-5" role="alert"
-        style="background: rgba(255, 193, 7, 0.1);">
-        <div class="bg-warning text-white rounded-circle d-flex align-items-center justify-content-center me-3 flex-shrink-0"
-            style="width: 48px; height: 48px;">
-            <i class="bi bi-shield-exclamation fs-4"></i>
-        </div>
-        <div>
-            <h5 class="alert-heading fw-bold text-warning-emphasis mb-1">Account Approvals Pending</h5>
-            <p class="mb-0 text-secondary small">Your employer account is currently under review. Nerdo.Africa admins
-                verify all employers to prevent spam/scam jobs. You will be notified once approved.</p>
-        </div>
-    </div>
-    {% endif %}
-
+    <!-- Company Profile Section -->
     <div class="card border-0 shadow-lg bg-glass rounded-4 overflow-hidden mb-5">
         <div class="card-header bg-white border-bottom-0 pt-4 pb-2 px-4 d-flex align-items-center gap-2">
-            <span class="bg-success-subtle text-success rounded px-2 py-1"><i class="bi bi-briefcase-fill"></i></span>
-            <h5 class="fw-bold mb-0 text-dark">My Job Postings</h5>
+            <span class="bg-primary-subtle text-primary rounded px-2 py-1"><i class="bi bi-building-fill"></i></span>
+            <h5 class="fw-bold mb-0 text-dark">Company Profile</h5>
+            <button class="btn btn-sm btn-outline-primary ms-auto rounded-pill px-3" type="button"
+                data-bs-toggle="collapse" data-bs-target="#profileCollapse" aria-expanded="false"
+                aria-controls="profileCollapse">
+                <i class="bi bi-pencil-square me-1"></i> Edit Details
+            </button>
         </div>
         <div class="card-body p-4">
-            {% if my_jobs %}
-            <div class="table-responsive">
-                <table class="table table-hover align-middle border-light">
-                    <thead class="bg-light text-secondary small text-uppercase">
-                        <tr>
-                            <th class="border-0 rounded-start-2 py-3 ps-3">Job Title</th>
-                            <th class="border-0 py-3">Candidates</th>
-                            <th class="border-0 py-3">Status</th>
-                            <th class="border-0 py-3">Posted Date</th>
-                            <th class="border-0 rounded-end-2 py-3 text-end pe-3">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for job in my_jobs %}
-                        <tr>
-                            <td class="ps-3">
-                                <div class="fw-bold text-dark">{{ job.title }}</div>
-                                <small class="text-secondary">{{ job.get_category_display }}</small>
-                            </td>
-                            <td>
-                                <div class="d-flex align-items-center">
-                                    <div class="avatar-group me-2">
-                                        <!-- Placeholder avatars just for visual flair if we had candidate images -->
-                                        <div class="bg-light border rounded-circle d-flex align-items-center justify-content-center text-muted"
-                                            style="width: 24px; height: 24px; font-size: 10px;">
-                                            <i class="bi bi-people"></i>
+            <div class="row align-items-center">
+                <div class="col-md-2 text-center mb-3 mb-md-0">
+                    {% if user.profile.avatar %}
+                    <img src="{{ user.profile.avatar.url }}" alt="Company Logo"
+                        class="rounded-circle shadow-sm object-fit-cover" width="100" height="100">
+                    {% else %}
+                    <div class="bg-light rounded-circle d-flex align-items-center justify-content-center mx-auto text-secondary fw-bold fs-3 border"
+                        style="width: 100px; height: 100px;">
+                        {{ user.first_name|first }}{{ user.last_name|first }}
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="col-md-10">
+                    <h4 class="fw-bold text-dark mb-1">{{ user.first_name }} {{ user.last_name }}</h4>
+                    <p class="text-muted mb-2 small"><i class="bi bi-geo-alt-fill me-1 text-primary"></i>
+                        {{user.profile.location|default:"Location not set" }}</p>
+
+                    <div class="d-flex gap-3 mb-2">
+                        {% if user.profile.website %}
+                        <a href="{{ user.profile.website }}" target="_blank"
+                            class="text-decoration-none small text-secondary"><i class="bi bi-globe me-1"></i>
+                            Website</a>
+                        {% endif %}
+                        {% if user.profile.social_twitter %}
+                        <a href="{{ user.profile.social_twitter }}" target="_blank"
+                            class="text-decoration-none small text-secondary"><i class="bi bi-twitter-x me-1"></i>
+                            Twitter</a>
+                        {% endif %}
+                        {% if user.profile.social_linkedin %}
+                        <a href="{{ user.profile.social_linkedin }}" target="_blank"
+                            class="text-decoration-none small text-secondary"><i class="bi bi-linkedin me-1"></i>
+                            LinkedIn</a>
+                        {% endif %}
+                        {% if user.profile.social_facebook %}
+                        <a href="{{ user.profile.social_facebook }}" target="_blank"
+                            class="text-decoration-none small text-secondary"><i class="bi bi-facebook me-1"></i>
+                            Facebook</a>
+                        {% endif %}
+                    </div>
+                    {% if user.profile.bio %}
+                    <p class="text-secondary small mb-0 fst-italic">"{{ user.profile.bio|truncatechars:150 }}"</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Collapsible Edit Profile Form -->
+            <div class="collapse mt-4" id="profileCollapse">
+                <div class="card border-0 bg-light rounded-4 shadow-sm">
+                    <div class="card-body p-4">
+                        <h6 class="fw-bold text-dark mb-3">
+                            <i class="bi bi-pencil-square text-primary me-2"></i>Edit Company Profile
+                        </h6>
+                        <form method="POST" enctype="multipart/form-data">
+                            {% csrf_token %}
+
+                            {% if p_form.errors %}
+                            <div class="alert alert-danger border-0 rounded-3 mb-3">
+                                <strong>Please correct the errors below:</strong>
+                                <ul class="mb-0 mt-2">
+                                    {% for field, errors in p_form.errors.items %}
+                                    {% for error in errors %}
+                                    <li>{{ field|title }}: {{ error }}</li>
+                                    {% endfor %}
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                            {% endif %}
+
+                            <div class="row g-3">
+                                <!-- Avatar Upload -->
+                                <div class="col-12">
+                                    <label class="form-label fw-medium small text-secondary">Company Logo/Avatar</label>
+                                    <div class="d-flex align-items-center gap-3">
+                                        {% if user.profile.avatar %}
+                                        <img src="{{ user.profile.avatar.url }}" alt="Current Avatar"
+                                            class="rounded-circle shadow-sm object-fit-cover" width="60" height="60">
+                                        {% else %}
+                                        <div class="bg-light rounded-circle d-flex align-items-center justify-content-center text-secondary fw-bold border"
+                                            style="width: 60px; height: 60px; font-size: 1.5rem;">
+                                            {{ user.first_name|first }}{{ user.last_name|first }}
+                                        </div>
+                                        {% endif %}
+                                        <div class="flex-grow-1">
+                                            {{ p_form.avatar }}
+                                            <small class="text-muted d-block mt-1">Upload a company logo
+                                                (optional)</small>
                                         </div>
                                     </div>
-                                    <span class="badge bg-light text-dark border fw-normal">{{ job.applications.count }}
-                                        Applicants</span>
                                 </div>
-                            </td>
-                            <td>
-                                {% if job.is_approved %}
-                                <span
-                                    class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3">
-                                    <i class="bi bi-check-circle-fill me-1 small"></i> Live
-                                </span>
-                                {% else %}
-                                <span
-                                    class="badge bg-warning-subtle text-warning border border-warning-subtle rounded-pill px-3">
-                                    <i class="bi bi-hourglass-split me-1 small"></i> Under Review
-                                </span>
-                                {% endif %}
-                            </td>
-                            <td class="text-secondary small">{{ job.created_at|date:"M d, Y" }}</td>
-                            <td class="text-end pe-3">
-                                <a href="{% url 'job_detail' job.id %}"
-                                    class="btn btn-sm btn-outline-success rounded-pill px-3 fw-medium transition-transform hover-scale">
-                                    Manage
-                                </a>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-            {% else %}
-            <div class="text-center py-5 bg-light-subtle rounded-4 border border-dashed">
-                <div class="mb-3 text-secondary opacity-50">
-                    <i class="bi bi-megaphone fs-1"></i>
+
+                                <!-- First and Last Name -->
+                                <div class="col-md-6">
+                                    <label class="form-label fw-medium small text-secondary">{{ p_form.first_name.label}}</label>
+                                    {{ p_form.first_name }}
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-medium small text-secondary">{{ p_form.last_name.label}}</label>
+                                    {{ p_form.last_name }}
+                                </div>
+
+                                <!-- Phone Number (Read-only) -->
+                                <div class="col-md-6">
+                                    <label class="form-label fw-medium small text-secondary">Phone Number</label>
+                                    <input type="text" class="form-control bg-light"
+                                        value="{{ user.profile.phone_number }}" disabled>
+                                    <small class="text-muted">Phone number cannot be changed (used for authentication)</small>
+                                </div>
+
+                                <!-- Location -->
+                                <div class="col-md-6">
+                                    <label class="form-label fw-medium small text-secondary">{{ p_form.location.label}}</label>
+                                    {{ p_form.location }}
+                                </div>
+
+                                <!-- Website -->
+                                <div class="col-12">
+                                    <label class="form-label fw-medium small text-secondary">{{ p_form.website.label}}</label>
+                                    {{ p_form.website }}
+                                </div>
+
+                                <!-- Bio -->
+                                <div class="col-12">
+                                    <label class="form-label fw-medium small text-secondary">{{ p_form.bio.label}}</label>
+                                    {{ p_form.bio }}
+                                </div>
+
+                                <!-- Social Media Links -->
+                                <div class="col-12">
+                                    <label class="form-label fw-bold text-dark mb-2">Social Media Links</label>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label fw-medium small text-secondary">
+                                        <i class="bi bi-twitter-x me-1"></i>Twitter/X
+                                    </label>
+                                    {{ p_form.social_twitter }}
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label fw-medium small text-secondary">
+                                        <i class="bi bi-linkedin me-1"></i>LinkedIn
+                                    </label>
+                                    {{ p_form.social_linkedin }}
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label fw-medium small text-secondary">
+                                        <i class="bi bi-facebook me-1"></i>Facebook
+                                    </label>
+                                    {{ p_form.social_facebook }}
+                                </div>
+
+                                <!-- Action Buttons -->
+                                <div class="col-12 mt-3 d-flex gap-2">
+                                    <button type="submit" class="btn btn-modern rounded-pill px-4 fw-bold shadow-sm">
+                                        <i class="bi bi-check-circle me-1"></i>Save Changes
+                                    </button>
+                                    <button type="button" class="btn btn-outline-secondary rounded-pill px-4 fw-medium"
+                                        data-bs-toggle="collapse" data-bs-target="#profileCollapse">
+                                        <i class="bi bi-x-circle me-1"></i>Cancel
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
                 </div>
-                <h5 class="fw-bold text-dark">No active jobs</h5>
-                <p class="text-muted small mb-4">You haven't posted any jobs yet.</p>
-                {% if is_verified %}
-                <a href="{% url 'create_job' %}" class="btn btn-modern rounded-pill px-4 fw-bold shadow-sm">
-                    Post Your First Job
-                </a>
-                {% else %}
-                <p class="small text-muted bg-light d-inline-block px-3 py-1 rounded-pill">Wait for admin approval to
-                    start posting.</p>
-                {% endif %}
+            </div>
+
+            {% if not is_verified %}
+            <div class="alert alert-warning border-0 shadow-sm rounded-4 d-flex align-items-center p-4 mb-5"
+                role="alert" style="background: rgba(255, 193, 7, 0.1);">
+                <div class="bg-warning text-white rounded-circle d-flex align-items-center justify-content-center me-3 flex-shrink-0"
+                    style="width: 48px; height: 48px;">
+                    <i class="bi bi-shield-exclamation fs-4"></i>
+                </div>
+                <div>
+                    <h5 class="alert-heading fw-bold text-warning-emphasis mb-1">Account Approvals Pending</h5>
+                    <p class="mb-0 text-secondary small">Your employer account is currently under review. Nerdo.Africa
+                        admins verify all employers to prevent spam/scam jobs. You will be notified once approved.</p>
+                </div>
             </div>
             {% endif %}
+
+            <div class="card border-0 shadow-lg bg-glass rounded-4 overflow-hidden mt-4 mb-5">
+                <div class="card-header bg-white border-bottom-0 pt-4 pb-2 px-4 d-flex align-items-center gap-2">
+                    <span class="bg-success-subtle text-success rounded px-2 py-1"><i
+                            class="bi bi-briefcase-fill"></i></span>
+                    <h5 class="fw-bold mb-0 text-dark">My Job Postings</h5>
+                </div>
+                <div class="card-body p-4">
+                    {% if my_jobs %}
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle border-light">
+                            <thead class="bg-light text-secondary small text-uppercase">
+                                <tr>
+                                    <th class="border-0 rounded-start-2 py-3 ps-3">Job Title</th>
+                                    <th class="border-0 py-3">Candidates</th>
+                                    <th class="border-0 py-3">Status</th>
+                                    <th class="border-0 py-3">Posted Date</th>
+                                    <th class="border-0 rounded-end-2 py-3 text-end pe-3">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for job in my_jobs %}
+                                <tr>
+                                    <td class="ps-3">
+                                        <div class="fw-bold text-dark">{{ job.title }}</div>
+                                        <small class="text-secondary">{{ job.get_category_display }}</small>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar-group me-2">
+                                                <!-- Placeholder avatars just for visual flair if we had candidate images -->
+                                                <div class="bg-light border rounded-circle d-flex align-items-center justify-content-center text-muted"
+                                                    style="width: 24px; height: 24px; font-size: 10px;">
+                                                    <i class="bi bi-people"></i>
+                                                </div>
+                                            </div>
+                                            <span class="badge bg-light text-dark border fw-normal">{{job.applications.count }} Applicants</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        {% if job.is_approved %}
+                                        <span
+                                            class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3">
+                                            <i class="bi bi-check-circle-fill me-1 small"></i> Live
+                                        </span>
+                                        {% else %}
+                                        <span
+                                            class="badge bg-warning-subtle text-warning border border-warning-subtle rounded-pill px-3">
+                                            <i class="bi bi-hourglass-split me-1 small"></i> Under Review
+                                        </span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-secondary small">{{ job.created_at|date:"M d, Y" }}</td>
+                                    <td class="text-end pe-3">
+                                        <a href="{% url 'job_detail' job.id %}"
+                                            class="btn btn-sm btn-outline-success rounded-pill px-3 fw-medium transition-transform hover-scale">
+                                            Manage
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-5 bg-light-subtle rounded-4 border border-dashed">
+                        <div class="mb-3 text-secondary opacity-50">
+                            <i class="bi bi-megaphone fs-1"></i>
+                        </div>
+                        <h5 class="fw-bold text-dark">No active jobs</h5>
+                        <p class="text-muted small mb-4">You haven't posted any jobs yet.</p>
+                        {% if is_verified %}
+                        <a href="{% url 'create_job' %}" class="btn btn-modern rounded-pill px-4 fw-bold shadow-sm">
+                            Post Your First Job
+                        </a>
+                        {% else %}
+                        <p class="small text-muted bg-light d-inline-block px-3 py-1 rounded-pill">Wait for admin
+                            approval to
+                            start posting.</p>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
         </div>
-    </div>
-</div>
 
-<style>
-    .fade-in-up {
-        animation: fadeInUp 0.5s ease-out;
-    }
+        <style>
+            .fade-in-up {
+                animation: fadeInUp 0.5s ease-out;
+            }
 
-    @keyframes fadeInUp {
-        from {
-            opacity: 0;
-            transform: translateY(10px);
-        }
+            @keyframes fadeInUp {
+                from {
+                    opacity: 0;
+                    transform: translateY(10px);
+                }
 
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
 
-    .transition-transform {
-        transition: transform 0.2s;
-    }
+            .transition-transform {
+                transition: transform 0.2s;
+            }
 
-    .hover-scale:hover {
-        transform: scale(1.05);
-    }
-</style>
-{% endblock %}
+            .hover-scale:hover {
+                transform: scale(1.05);
+            }
+        </style>
+        {% endblock %}

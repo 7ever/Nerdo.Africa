@@ -21,6 +21,13 @@ class Profile(models.Model):
     avatar = models.ImageField(upload_to='avatars/', default='defaults/default_avatar.png', blank=True)
     cv = models.FileField(upload_to='cvs/', blank=True, null=True, help_text="Upload your CV/Resume (PDF/Docx)")
 
+    # NEW: Employer/Company Details
+    location = models.CharField(max_length=100, blank=True)
+    website = models.URLField(blank=True, help_text="e.g. https://www.yourcompany.com")
+    social_twitter = models.URLField(blank=True, help_text="Twitter/X Profile URL")
+    social_linkedin = models.URLField(blank=True, help_text="LinkedIn Company Page URL")
+    social_facebook = models.URLField(blank=True, help_text="Facebook Page URL")
+
     # NEW: OTP Fields
     otp_code = models.CharField(max_length=6, blank=True, null=True)
     otp_created_at = models.DateTimeField(auto_now=True)

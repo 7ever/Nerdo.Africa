@@ -110,6 +110,68 @@ class ProfileUpdateForm(forms.ModelForm):
             profile.user.save()
         return profile
 
+class EmployerProfileUpdateForm(forms.ModelForm):
+    first_name = forms.CharField(max_length=30, required=True, label="Company Contact First Name")
+    last_name = forms.CharField(max_length=30, required=True, label="Company Contact Last Name")
+    
+    class Meta:
+        model = Profile
+        fields = ['avatar', 'phone_number', 'location', 'website', 'bio', 
+                  'social_twitter', 'social_linkedin', 'social_facebook']
+        widgets = {
+             'bio': forms.Textarea(attrs={'rows': 4, 'placeholder': 'Tell us about your company...'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        super().__init__(*args, **kwargs)
+        if user:
+            self.fields['first_name'].initial = user.first_name
+            self.fields['last_name'].initial = user.last_name
+            
+        # Add Bootstrap classes and placeholders
+        for field in self.fields:
+             if 'class' not in self.fields[field].widget.attrs:
+                 self.fields[field].widget.attrs['class'] = 'form-control'
+                 
+        self.fields['location'].widget.attrs['placeholder'] = 'e.g. Nairobi, Kenya'
+
+    def clean_website(self):
+        url = self.cleaned_data.get('website')
+        if url and not url.startswith(('http://', 'https://')):
+            return f'https://{url}'
+        return url
+
+    def clean_social_twitter(self):
+        url = self.cleaned_data.get('social_twitter')
+        if url and not url.startswith(('http://', 'https://')):
+            return f'https://{url}'
+        return url
+
+    def clean_social_linkedin(self):
+        url = self.cleaned_data.get('social_linkedin')
+        if url and not url.startswith(('http://', 'https://')):
+            return f'https://{url}'
+        return url
+
+    def clean_social_facebook(self):
+        url = self.cleaned_data.get('social_facebook')
+        if url and not url.startswith(('http://', 'https://')):
+            return f'https://{url}'
+        return url
+
+    def save(self, commit=True):
+        profile = super().save(commit=False)
+        if commit:
+            profile.save()
+            # Update User model fields
+            if self.cleaned_data.get('first_name'):
+                profile.user.first_name = self.cleaned_data['first_name']
+            if self.cleaned_data.get('last_name'):
+                profile.user.last_name = self.cleaned_data['last_name']
+            profile.user.save()
+        return profile
+
 # 2. Form for Requesting the Reset (Enter Phone)
 class PasswordResetRequestForm(forms.Form):
     phone_number = forms.CharField(max_length=15, label="Enter Registered Phone Number")
