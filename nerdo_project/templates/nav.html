@@ -63,10 +63,10 @@
                                 href="{% url 'profile' %}">
                                 {% if user.profile.avatar and 'avatars/' in user.profile.avatar.url %}
                                 <img src="{{ user.profile.avatar.url }}" class="rounded-circle shadow-sm"
-                                    style="width: 60px; height: 48px;" />
+                                    style="width: 48px; height: 48px;" />
                                 {% else %}
                                 <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center fs-5 fw-bold"
-                                    style="width: 60px; height: 48px; background: linear-gradient(135deg, #10b981, #059669) !important;">
+                                    style="width: 48px; height: 48px; background: linear-gradient(135deg, #10b981, #059669) !important;">
                                     {{ user.username|make_list|first|upper }}
                                 </div>
                                 {% endif %}
