@@ -1,13 +1,11 @@
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import login_required, user_passes_test
+
+from django.shortcuts import render, get_object_or_404, redirect
+from django.db.models import Q
 from django.contrib import messages
-from django.db.models import Q # Required for complex search
+from django.contrib.auth.decorators import login_required, user_passes_test
 from .models import Job, Application
 from .forms import JobForm
-
-# Helper to check if user is verified employer
-def is_verified_employer(user):
-    return user.is_authenticated and hasattr(user, 'profile') and user.profile.role == 'employer' and user.profile.is_employer_verified
+from apps.users.decorators import premium_required, is_verified_employer
 
 # 1. SPLIT VIEW: JOB MARKET WITH SEARCH & FILTERS
 def job_market(request):
@@ -134,6 +132,11 @@ def apply_job(request, pk):
         messages.warning(request, "You have already applied for this job.")
         return redirect('job_market')
 
+    # RESTRICTION: Employers cannot apply
+    if hasattr(request.user, 'profile') and request.user.profile.role == 'employer':
+        messages.error(request, "Employers cannot apply for jobs.")
+        return redirect('job_market')
+
     # Create Application
     Application.objects.create(job=job, applicant=request.user)
     
@@ -145,3 +148,35 @@ def apply_job(request, pk):
 def my_jobs(request):
     jobs = Job.objects.filter(author=request.user)
     return render(request, "opportunities/job_list.html", {"jobs": jobs})
+
+@login_required
+@premium_required
+def toggle_reminder(request, job_id):
+    """
+    Toggle the reminder status for a user on a specific job.
+    """
+    from .models import JobReminder
+    
+    
+    job = get_object_or_404(Job, pk=job_id)
+    
+    # RESTRICTION: Employers cannot set reminders
+    if hasattr(request.user, 'profile') and request.user.profile.role == 'employer':
+        messages.error(request, "Employers cannot set reminders.")
+        # Redirect back to referring page or job market
+        return redirect(request.META.get('HTTP_REFERER', 'job_market'))
+
+    # Toggle logic
+    reminder, created = JobReminder.objects.get_or_create(user=request.user, job=job)
+    
+    if not created:
+        # If it already existed, delete it (Toggle OFF)
+        reminder.delete()
+        messages.info(request, f"Reminder removed for '{job.title}'.")
+    else:
+        # If it was just created (Toggle ON)
+        messages.success(request, f"Reminder set! We'll notify you 3 days before the deadline.")
+        
+    # Redirect back to where they came from, or job market
+    next_url = request.META.get('HTTP_REFERER', 'job_market')
+    return redirect(next_url)

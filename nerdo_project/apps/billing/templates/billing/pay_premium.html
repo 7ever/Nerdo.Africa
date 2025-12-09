@@ -67,7 +67,8 @@
 
         <!-- Footer Link -->
         <div class="text-center mt-4">
-            <a href="{% url 'profile' %}" class="text-decoration-none text-secondary small fw-medium hover-underline">
+            <a href="{% if request.GET.cancel %}{{ request.GET.cancel }}{% else %}{% url 'profile' %}{% endif %}"
+                class="text-decoration-none text-secondary small fw-medium hover-underline">
                 <i class="bi bi-arrow-left me-1"></i> Skip for now
             </a>
         </div>

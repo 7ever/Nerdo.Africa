@@ -30,20 +30,33 @@ class Command(BaseCommand):
             # 3. Get all applicants for this job
             applications = Application.objects.filter(job=job)
             
+            # Notify Applicants
             for app in applications:
                 user = app.applicant
                 if hasattr(user, 'profile') and user.profile.phone_number:
                     phone = user.profile.phone_number
                     msg = f"Reminder: The job '{job.title}' closes in 3 days ({job.deadline})."
                     
-                    self.stdout.write(f" -> Queued SMS for {user.username} ({phone})")
+                    self.stdout.write(f" -> Queued SMS for Applicant {user.username} ({phone})")
+                    send_sms(phone, msg)
+                    count += 1
+
+            # 4. Notify Reminder Subscribers (NEW)
+            from apps.opportunities.models import JobReminder
+            reminders = JobReminder.objects.filter(job=job)
+            
+            for reminder in reminders:
+                user = reminder.user
+                # Avoid duplicate SMS if user is also an applicant (optional optimization)
+                if applications.filter(applicant=user).exists():
+                    continue
+
+                if hasattr(user, 'profile') and user.profile.phone_number:
+                    phone = user.profile.phone_number
+                    msg = f"Reminder: The job '{job.title}' closes in 3 days ({job.deadline})."
                     
-                    # Send SMS using the new generic function
-                    success = send_sms(phone, msg)
-                    
-                    if success:
-                       count += 1
-                    else:
-                       self.stdout.write(self.style.WARNING(f"    Failed to send SMS to {user.username}"))
+                    self.stdout.write(f" -> Queued SMS for Subscriber {user.username} ({phone})")
+                    send_sms(phone, msg)
+                    count += 1
         
         self.stdout.write(self.style.SUCCESS(f"Done. Sent {count} reminders."))

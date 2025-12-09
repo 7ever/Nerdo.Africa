@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
 from django import forms
 from django.db.models import Q
-from .forms import UserRegisterForm, OTPVerifyForm, ProfileUpdateForm
+from .forms import UserRegisterForm, OTPVerifyForm, ProfileUpdateForm, EmployerProfileUpdateForm
 from .models import Profile
 from apps.opportunities.models import Job, Application 
 from .utils import generate_otp, send_otp_sms
@@ -196,10 +196,21 @@ def employer_dashboard(request):
         messages.error(request, "Access denied. Employer account required.")
         return redirect('profile')
 
+    if request.method == 'POST':
+        # Handle Profile Update
+        p_form = EmployerProfileUpdateForm(request.POST, request.FILES, instance=user.profile, user=user)
+        if p_form.is_valid():
+            p_form.save()
+            messages.success(request, "Company profile updated successfully!")
+            return redirect('employer_dashboard')
+    else:
+        p_form = EmployerProfileUpdateForm(instance=user.profile, user=user)
+
     my_jobs = Job.objects.filter(author=user).annotate(app_count=Count('applications')).order_by('-created_at')
     
     context = {
         'my_jobs': my_jobs,
+        'p_form': p_form,
         'is_verified': user.profile.is_employer_verified
     }
     return render(request, 'users/employer_dashboard.html', context)

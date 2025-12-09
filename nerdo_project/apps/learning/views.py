@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.core.paginator import Paginator
 from .utils import generate_complete_roadmap
 from .models import LearningPath
-from .decorators import premium_required
+from apps.users.decorators import premium_required
 import logging
 
 logger = logging.getLogger(__name__)
