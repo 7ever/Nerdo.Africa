@@ -54,7 +54,7 @@
                         <li class="mb-2">
                             <a class="dropdown-item p-3 rounded-3 bg-light-subtle d-flex align-items-center gap-2"
                                 href="{% url 'profile' %}">
-                                <img src="{{ user.profile.get_avatar_url }}" class="rounded-circle shadow-sm"
+                                <img src="{{ user.profile.get_avatar_url }}" class="rounded-circle shadow-sm object-fit-cover"
                                     style="width: 48px; height: 48px;" />
                                 <div class="overflow-hidden">
                                     <h6 class="mb-0 fw-bold text-dark text-truncate">{{ user.first_name }}
