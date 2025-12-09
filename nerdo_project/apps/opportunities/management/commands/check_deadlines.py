@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 from apps.opportunities.models import Job, Application
-from apps.users.utils import send_otp_sms
+from apps.users.utils import send_sms
 from datetime import timedelta
 
 class Command(BaseCommand):
@@ -34,12 +34,12 @@ class Command(BaseCommand):
                 user = app.applicant
                 if hasattr(user, 'profile') and user.profile.phone_number:
                     phone = user.profile.phone_number
-                    msg = f"Reminder: The job '{job.title}' you applied for closes on {job.deadline}. Good luck!"
+                    msg = f"Reminder: The job '{job.title}' closes in 3 days ({job.deadline})."
                     
                     self.stdout.write(f" -> Queued SMS for {user.username} ({phone})")
                     
-                    # Send SMS using the refactored utility
-                    success = send_otp_sms(phone_number=phone, message=msg)
+                    # Send SMS using the new generic function
+                    success = send_sms(phone, msg)
                     
                     if success:
                        count += 1
