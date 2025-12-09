@@ -259,13 +259,9 @@
                         <div>
                             <div class="bg-white rounded-3 shadow-md d-inline-flex align-items-center justify-content-center mb-3 border border-light"
                                 style="width: 72px; height: 72px;">
-                                {% if selected_job.author.profile.avatar and 'avatars/' in selected_job.author.profile.avatar.url %}
-                                <img src="{{ selected_job.author.profile.avatar.url }}"
+                                <img src="{{ selected_job.author.profile.get_avatar_url }}"
                                     class="rounded-3 shadow-sm object-fit-cover" style="width: 100%; height: 100%;"
                                     alt="Logo">
-                                {% else %}
-                                <span class="fw-bold fs-2 text-success">{{ selected_job.title|slice:":1" }}</span>
-                                {% endif %}
                             </div>
                             <h2 class="fw-bold mb-1 text-dark tracking-tight">{{ selected_job.title }}</h2>
                             <div class="d-flex align-items-center gap-3 text-secondary small fw-medium flex-wrap">

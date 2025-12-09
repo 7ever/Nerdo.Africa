@@ -1,0 +1,152 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}Community{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+    <!-- Main Feed -->
+    <div class="col-lg-8">
+        <!-- Create Post Card -->
+        <div class="card border-0 mb-4 bg-glass shadow-sm">
+            <div class="card-body p-4">
+                <div class="d-flex gap-3">
+                    <img src="{{ user.profile.get_avatar_url }}" class="rounded-circle object-fit-cover" width="48"
+                        height="48" alt="{{ user.username }}">
+                    <div class="w-100">
+                        <form method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            {{ form.content }}
+                            <div class="d-flex justify-content-between align-items-center mt-3">
+                                <div class="d-flex gap-2">
+                                    <label class="btn btn-light btn-sm rounded-pill text-secondary border">
+                                        <i class="bi bi-image"></i> Photo
+                                        <span class="d-none">{{ form.image }}</span>
+                                    </label>
+                                </div>
+                                <button type="submit" class="btn btn-modern rounded-pill px-4 fw-bold">Post</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Posts Feed -->
+        <div class="d-flex flex-column gap-4">
+            {% for post in posts %}
+            <div class="card border-0 bg-white shadow-sm hover-shadow transition">
+                <div class="card-body p-4">
+                    <!-- Author Header -->
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <a href="#" class="d-flex align-items-center gap-2 text-decoration-none text-dark">
+                            <img src="{{ post.author.profile.get_avatar_url }}" class="rounded-circle object-fit-cover"
+                                width="40" height="40">
+                            <div>
+                                <h6 class="mb-0 fw-bold">{{ post.author.username }}</h6>
+                                <small class="text-muted">{{ post.created_at|timesince }} ago</small>
+                            </div>
+                        </a>
+                    </div>
+
+                    <!-- Post Content -->
+                    <p class="mb-3">{{ post.content|linebreaks }}</p>
+
+                    {% if post.image %}
+                    <div class="mb-3 rounded-4 overflow-hidden shadow-sm">
+                        <img src="{{ post.image.url }}" class="img-fluid w-100 object-fit-cover"
+                            style="max-height: 400px;">
+                    </div>
+                    {% endif %}
+
+                    <hr class="opacity-10">
+
+                    <!-- Actions -->
+                    <div class="d-flex gap-4">
+                        <button
+                            class="btn btn-link text-secondary text-decoration-none p-0 d-flex align-items-center gap-1">
+                            <i class="bi bi-heart"></i> {{ post.total_likes }} Like{{ post.total_likes|pluralize }}
+                        </button>
+                        <a href="{% url 'post_detail' post.pk %}"
+                            class="btn btn-link text-secondary text-decoration-none p-0 d-flex align-items-center gap-1">
+                            <i class="bi bi-chat"></i> {{ post.comments.count }}
+                            Comment{{post.comments.count|pluralize}}
+                        </a>
+                        <button
+                            class="btn btn-link text-secondary text-decoration-none p-0 d-flex align-items-center gap-1">
+                            <i class="bi bi-share"></i> Share
+                        </button>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="text-center py-5">
+                <div class="display-1 text-muted opacity-25 mb-3">
+                    <i class="bi bi-chat-square-quote"></i>
+                </div>
+                <h4 class="text-secondary">No posts yet</h4>
+                <p class="text-muted">Be the first to share something with the community!</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="col-lg-4 d-none d-lg-block">
+        <!-- Gallery Widget -->
+        <div class="card border-0 bg-glass mb-4 overflow-hidden">
+            <div class="card-header bg-transparent border-0 pt-4 px-4 pb-0">
+                <h5 class="fw-bold mb-0">Community Gallery</h5>
+            </div>
+            <div class="card-body p-4">
+                <div class="row g-2">
+                    <div class="col-4">
+                        <img src="{% static 'images/pic1.jpg' %}" class="img-fluid rounded-3 object-fit-cover shadow-sm"
+                            style="aspect-ratio: 1/1;">
+                    </div>
+                    <div class="col-4">
+                        <img src="{% static 'images/pic2.jpg' %}" class="img-fluid rounded-3 object-fit-cover shadow-sm"
+                            style="aspect-ratio: 1/1;">
+                    </div>
+                    <div class="col-4">
+                        <img src="{% static 'images/pic3.jpg' %}" class="img-fluid rounded-3 object-fit-cover shadow-sm"
+                            style="aspect-ratio: 1/1;">
+                    </div>
+                    <div class="col-4">
+                        <img src="{% static 'images/pic4.jpg' %}" class="img-fluid rounded-3 object-fit-cover shadow-sm"
+                            style="aspect-ratio: 1/1;">
+                    </div>
+                    <div class="col-4">
+                        <img src="{% static 'images/pic5.jpg' %}" class="img-fluid rounded-3 object-fit-cover shadow-sm"
+                            style="aspect-ratio: 1/1;">
+                    </div>
+                    <div class="col-4">
+                        <img src="{% static 'images/pic6.jpg' %}" class="img-fluid rounded-3 object-fit-cover shadow-sm"
+                            style="aspect-ratio: 1/1;">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Info Widget -->
+        <div class="card border-0 bg-glass text-center p-4">
+            <h5 class="fw-bold text-success mb-2">Nerdo Community</h5>
+            <p class="small text-muted mb-4">Connect, share, and grow with fellow developers and freelancers across
+                Africa.</p>
+            <img src="{% static 'images/pic7.jpg' %}" class="img-fluid rounded-4 mb-3 shadow-sm" alt="Community">
+        </div>
+    </div>
+</div>
+
+<style>
+    .hover-shadow:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05) !important;
+    }
+
+    .transition {
+        transition: all 0.2s ease;
+    }
+</style>
+{% endblock %}

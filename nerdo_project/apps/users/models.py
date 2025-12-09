@@ -18,7 +18,7 @@ class Profile(models.Model):
     phone_number = models.CharField(max_length=15, blank=True)
     
     # Profile Data
-    avatar = models.ImageField(upload_to='avatars/', default='defaults/default_avatar.png', blank=True)
+    avatar = models.ImageField(upload_to='avatars/', blank=True, null=True)
     cv = models.FileField(upload_to='cvs/', blank=True, null=True, help_text="Upload your CV/Resume (PDF/Docx)")
 
     # NEW: Employer/Company Details
@@ -42,6 +42,13 @@ class Profile(models.Model):
 
     def __str__(self):
         return f"{self.user.username}'s Profile"
+
+    @property
+    def get_avatar_url(self):
+        if self.avatar:
+            return self.avatar.url
+        from django.conf import settings
+        return f"{settings.STATIC_URL}images/avatar.png"
 
 # Signals
 @receiver(post_save, sender=User)

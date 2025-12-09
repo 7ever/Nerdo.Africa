@@ -29,7 +29,7 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link px-3 rounded-pill fw-medium text-secondary" href="#">
+                    <a class="nav-link px-3 rounded-pill fw-medium text-secondary" href="{% url 'community_home' %}">
                         <i class="bi bi-people me-1"></i> Community
                     </a>
                 </li>
@@ -43,16 +43,9 @@
                     <a class="nav-link dropdown-toggle d-flex align-items-center gap-2 text-dark fw-medium p-1 rounded-pill pe-3 hover-bg-light transition"
                         href="#" role="button" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false">
                         <!-- Avatar Circle -->
-                        {% if user.profile.avatar and 'avatars/' in user.profile.avatar.url %}
-                        <img src="{{ user.profile.avatar.url }}" alt="{{ user.username }}"
+                        <img src="{{ user.profile.get_avatar_url }}" alt="{{ user.username }}"
                             class="rounded-circle object-fit-cover border border-2 border-white shadow-sm"
                             style="width: 40px; height: 40px" />
-                        {% else %}
-                        <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center shadow-sm"
-                            style="width: 40px; height: 40px; background: linear-gradient(135deg, #10b981, #059669) !important;">
-                            {{ user.username|make_list|first|upper }}
-                        </div>
-                        {% endif %}
                         <span class="d-none d-lg-inline small fw-bold ms-1">{{ user.username }}</span>
                     </a>
 
@@ -61,15 +54,8 @@
                         <li class="mb-2">
                             <a class="dropdown-item p-3 rounded-3 bg-light-subtle d-flex align-items-center gap-2"
                                 href="{% url 'profile' %}">
-                                {% if user.profile.avatar and 'avatars/' in user.profile.avatar.url %}
-                                <img src="{{ user.profile.avatar.url }}" class="rounded-circle shadow-sm"
+                                <img src="{{ user.profile.get_avatar_url }}" class="rounded-circle shadow-sm"
                                     style="width: 48px; height: 48px;" />
-                                {% else %}
-                                <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center fs-5 fw-bold"
-                                    style="width: 48px; height: 48px; background: linear-gradient(135deg, #10b981, #059669) !important;">
-                                    {{ user.username|make_list|first|upper }}
-                                </div>
-                                {% endif %}
                                 <div class="overflow-hidden">
                                     <h6 class="mb-0 fw-bold text-dark text-truncate">{{ user.first_name }}
                                         {{user.last_name }}</h6>
