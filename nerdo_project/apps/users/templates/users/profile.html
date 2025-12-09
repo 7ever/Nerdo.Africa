@@ -27,15 +27,8 @@
                     <!-- Avatar Area -->
                     <div class="mb-4 position-relative d-inline-block">
                         <div class="p-1 rounded-circle bg-white shadow-sm">
-                            {% if user.profile.avatar and 'avatars/' in user.profile.avatar.url %}
-                            <img src="{{ user.profile.avatar.url }}" class="rounded-circle object-fit-cover" width="120"
-                                height="120" alt="Avatar">
-                            {% else %}
-                            <div class="bg-gradient-success text-white rounded-circle d-flex align-items-center justify-content-center mx-auto"
-                                style="width: 120px; height: 120px; background: linear-gradient(135deg, #10b981, #059669) !important;">
-                                <span class="display-4 fw-bold">{{ user.username|make_list|first|upper }}</span>
-                            </div>
-                            {% endif %}
+                            <img src="{{ user.profile.get_avatar_url }}" class="rounded-circle object-fit-cover"
+                                width="120" height="120" alt="Avatar">
                         </div>
                         <button
                             class="btn btn-sm btn-success position-absolute bottom-0 end-0 rounded-circle shadow-md border-2 border-white"
@@ -189,17 +182,18 @@
                         {% for job in recommended_jobs %}
                         <div class="col-md-6 col-xl-4">
                             <div class="card h-100 border bg-white shadow-sm hover-shadow-md transition">
-                                <div class="card-body p-3">
-                                    <div class="d-flex justify-content-between align-items-start mb-2">
-                                        <span class="badge bg-light text-dark border">{{ job.get_category_display}}</span>
-                                        <small class="text-success fw-bold bg-success-subtle px-2 py-1 rounded">
+                                <div class="card-body p-3 d-flex flex-column">
+                                    <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+                                        <span class="badge bg-light text-dark border text-truncate" style="max-width: 60%;" title="{{job.get_category_display}}">{{job.get_category_display}}</span>
+                                        <small class="badge bg-success-subtle text-success fw-bold text-nowrap flex-shrink-0">
                                             KES {{ job.budget|stringformat:".0f" }}
                                         </small>
                                     </div>
-                                    <h6 class="card-title fw-bold text-truncate text-dark mb-1" title="{{ job.title }}">
+                                    <h6 class="card-title fw-bold text-truncate text-dark mb-2" title="{{ job.title }}">
                                         {{ job.title }}</h6>
                                     <div class="d-flex align-items-center gap-2 text-secondary small mb-3">
-                                        <i class="bi bi-geo-alt"></i> Remote
+                                        <i class="bi bi-geo-alt"></i> 
+                                        <span>Remote</span>
                                     </div>
                                     <a href="{% url 'job_detail' job.id %}"
                                         class="btn btn-sm btn-outline-success w-100 rounded-pill stretched-link fw-medium">Details</a>

@@ -1,3 +1,4 @@
+import time
 import requests
 import logging
 from django.conf import settings
@@ -28,7 +29,7 @@ def generate_roadmap_topics(user_query, skill_level="beginner", duration_weeks=1
     """
     try:
         # Initialize the Gemini model (using flash for speed/cost balance)
-        model = genai.GenerativeModel('gemini-1.5-flash')
+        model = genai.GenerativeModel('gemini-flash-latest')
         
         # Adjust phase count based on skill level
         if skill_level.lower() == 'beginner':
@@ -78,17 +79,53 @@ def generate_roadmap_topics(user_query, skill_level="beginner", duration_weeks=1
         Now create the roadmap topics:
         """
         
-        # Generate content
-        response = model.generate_content(
-            prompt,
-            generation_config=genai.types.GenerationConfig(
-                temperature=0.8, # Increase temperature for uniqueness
-                max_output_tokens=500,
-            )
-        )
+        # Generate content with retry logic
+        max_retries = 3
+        response = None
         
-        # Parse the response
-        roadmap_text = response.text.strip()
+        for attempt in range(max_retries):
+            try:
+                response = model.generate_content(
+                    prompt,
+                    generation_config=genai.types.GenerationConfig(
+                        temperature=0.8, # Increase temperature for uniqueness
+                        max_output_tokens=1024, # Increased to prevent cut-off
+                    ),
+                    safety_settings={
+                        genai.types.HarmCategory.HARM_CATEGORY_HARASSMENT: genai.types.HarmBlockThreshold.BLOCK_ONLY_HIGH,
+                        genai.types.HarmCategory.HARM_CATEGORY_HATE_SPEECH: genai.types.HarmBlockThreshold.BLOCK_ONLY_HIGH,
+                        genai.types.HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT: genai.types.HarmBlockThreshold.BLOCK_ONLY_HIGH,
+                        genai.types.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT: genai.types.HarmBlockThreshold.BLOCK_ONLY_HIGH,
+                    }
+                )
+                break # Success
+            except Exception as e:
+                # Check for rate limit (429) or other transient errors
+                if "429" in str(e) or "Quota exceeded" in str(e):
+                    if attempt < max_retries - 1:
+                        sleep_time = 2 * (2 ** attempt) # Exponential backoff: 2s, 4s, 8s
+                        logger.warning(f"Gemini API rate limit hit. Retrying in {sleep_time}s...")
+                        time.sleep(sleep_time)
+                        continue
+                raise e # Re-raise if not a rate limit or max retries reached
+                
+        if not response:
+             raise Exception("Failed to generate content after retries")
+        
+        # Parse the response safely
+        roadmap_text = ""
+        try:
+             roadmap_text = response.text.strip()
+        except Exception:
+             # If response.text is invalid (e.g. max tokens reached effectively but accessor fails),
+             # try to get parts manually or just warn.
+             if response.candidates and response.candidates[0].content.parts:
+                  roadmap_text = response.candidates[0].content.parts[0].text.strip()
+             else:
+                  logger.warning(f"Gemini response finished with reason: {response.candidates[0].finish_reason if response.candidates else 'Unknown'}")
+                  # If we have partial text, use it? Or fallback.
+                  # For now, let's treat it as empty so fallback triggers
+                  pass
         
         # Extract numbered lines
         topics = []

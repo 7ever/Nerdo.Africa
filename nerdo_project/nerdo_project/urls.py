@@ -25,6 +25,7 @@ urlpatterns = [
     path('users/', include('apps.users.urls')),
     path('billing/', include('apps.billing.urls')),# Connects user routes
     path('learning/', include('apps.learning.urls')),
+    path('community/', include('apps.community.urls')),
 ]
 
 if settings.DEBUG:

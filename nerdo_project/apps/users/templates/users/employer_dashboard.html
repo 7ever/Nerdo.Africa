@@ -36,15 +36,8 @@
         <div class="card-body p-4">
             <div class="row align-items-center">
                 <div class="col-md-2 text-center mb-3 mb-md-0">
-                    {% if user.profile.avatar %}
-                    <img src="{{ user.profile.avatar.url }}" alt="Company Logo"
+                    <img src="{{ user.profile.get_avatar_url }}" alt="Company Logo"
                         class="rounded-circle shadow-sm object-fit-cover" width="100" height="100">
-                    {% else %}
-                    <div class="bg-light rounded-circle d-flex align-items-center justify-content-center mx-auto text-secondary fw-bold fs-3 border"
-                        style="width: 100px; height: 100px;">
-                        {{ user.first_name|first }}{{ user.last_name|first }}
-                    </div>
-                    {% endif %}
                 </div>
                 <div class="col-md-10">
                     <h4 class="fw-bold text-dark mb-1">{{ user.first_name }} {{ user.last_name }}</h4>
@@ -107,15 +100,8 @@
                                 <div class="col-12">
                                     <label class="form-label fw-medium small text-secondary">Company Logo/Avatar</label>
                                     <div class="d-flex align-items-center gap-3">
-                                        {% if user.profile.avatar %}
-                                        <img src="{{ user.profile.avatar.url }}" alt="Current Avatar"
+                                        <img src="{{ user.profile.get_avatar_url }}" alt="Current Avatar"
                                             class="rounded-circle shadow-sm object-fit-cover" width="60" height="60">
-                                        {% else %}
-                                        <div class="bg-light rounded-circle d-flex align-items-center justify-content-center text-secondary fw-bold border"
-                                            style="width: 60px; height: 60px; font-size: 1.5rem;">
-                                            {{ user.first_name|first }}{{ user.last_name|first }}
-                                        </div>
-                                        {% endif %}
                                         <div class="flex-grow-1">
                                             {{ p_form.avatar }}
                                             <small class="text-muted d-block mt-1">Upload a company logo
@@ -126,11 +112,11 @@
 
                                 <!-- First and Last Name -->
                                 <div class="col-md-6">
-                                    <label class="form-label fw-medium small text-secondary">{{ p_form.first_name.label}}</label>
+                                    <label class="form-label fw-medium small text-secondary">{{p_form.first_name.label}}</label>
                                     {{ p_form.first_name }}
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label fw-medium small text-secondary">{{ p_form.last_name.label}}</label>
+                                    <label class="form-label fw-medium small text-secondary">{{p_form.last_name.label}}</label>
                                     {{ p_form.last_name }}
                                 </div>
 
@@ -144,19 +130,19 @@
 
                                 <!-- Location -->
                                 <div class="col-md-6">
-                                    <label class="form-label fw-medium small text-secondary">{{ p_form.location.label}}</label>
+                                    <label class="form-label fw-medium small text-secondary">{{p_form.location.label}}</label>
                                     {{ p_form.location }}
                                 </div>
 
                                 <!-- Website -->
                                 <div class="col-12">
-                                    <label class="form-label fw-medium small text-secondary">{{ p_form.website.label}}</label>
+                                    <label class="form-label fw-medium small text-secondary">{{p_form.website.label}}</label>
                                     {{ p_form.website }}
                                 </div>
 
                                 <!-- Bio -->
                                 <div class="col-12">
-                                    <label class="form-label fw-medium small text-secondary">{{ p_form.bio.label}}</label>
+                                    <label class="form-label fw-medium small text-secondary">{{p_form.bio.label}}</label>
                                     {{ p_form.bio }}
                                 </div>
 
@@ -249,7 +235,8 @@
                                                     <i class="bi bi-people"></i>
                                                 </div>
                                             </div>
-                                            <span class="badge bg-light text-dark border fw-normal">{{job.applications.count }} Applicants</span>
+                                            <span
+                                                class="badge bg-light text-dark border fw-normal">{{job.applications.count}} Applicants</span>
                                         </div>
                                     </td>
                                     <td>
