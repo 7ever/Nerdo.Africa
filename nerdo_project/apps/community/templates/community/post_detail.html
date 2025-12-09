@@ -37,7 +37,13 @@
 
                 <!-- Stats -->
                 <div class="py-3 border-top border-bottom d-flex gap-4 text-secondary">
-                    <span><i class="bi bi-heart-fill text-danger"></i> {{ post.total_likes }} Likes</span>
+                    <button
+                        class="btn btn-link text-secondary text-decoration-none p-0 d-flex align-items-center gap-1 like-btn"
+                        data-post-id="{{ post.pk }}" style="border: none; background: none;">
+                        <i class="bi {% if request.user in post.likes.all %}bi-heart-fill text-danger{% else %}bi-heart{% endif %} transition"
+                            id="like-icon-{{ post.pk }}"></i>
+                        <span id="like-count-{{ post.pk }}">{{ post.total_likes }}</span> Like{{post.total_likes|pluralize }}
+                    </button>
                     <span><i class="bi bi-chat-fill text-primary"></i> {{ post.comments.count }} Comments</span>
                 </div>
 
@@ -86,4 +92,41 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const likeButtons = document.querySelectorAll('.like-btn');
+
+        likeButtons.forEach(button => {
+            button.addEventListener('click', function (e) {
+                e.preventDefault();
+                const postId = this.dataset.postId;
+                const icon = document.getElementById(`like-icon-${postId}`);
+                const countSpan = document.getElementById(`like-count-${postId}`);
+
+                fetch(`/community/post/like/${postId}/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}',
+                        'Content-Type': 'application/json'
+                    },
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.liked) {
+                            icon.classList.remove('bi-heart');
+                            icon.classList.add('bi-heart-fill', 'text-danger');
+                        } else {
+                            icon.classList.remove('bi-heart-fill', 'text-danger');
+                            icon.classList.add('bi-heart');
+                        }
+                        countSpan.textContent = data.total_likes;
+                    })
+                    .catch(error => console.error('Error:', error));
+            });
+        });
+    });
+</script>
 {% endblock %}

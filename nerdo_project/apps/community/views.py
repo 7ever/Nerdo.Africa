@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.http import JsonResponse
 from .models import Post, Comment
 from .forms import PostForm, CommentForm
 
@@ -46,3 +47,20 @@ def post_detail(request, pk):
         'form': form,
     }
     return render(request, 'community/post_detail.html', context)
+
+@login_required
+def like_post(request, pk):
+    if request.method == 'POST':
+        post = get_object_or_404(Post, pk=pk)
+        if request.user in post.likes.all():
+            post.likes.remove(request.user)
+            liked = False
+        else:
+            post.likes.add(request.user)
+            liked = True
+        
+        return JsonResponse({
+            'liked': liked,
+            'total_likes': post.total_likes()
+        })
+    return JsonResponse({'error': 'Invalid request'}, status=400)
