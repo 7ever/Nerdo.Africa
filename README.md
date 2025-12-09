@@ -37,6 +37,16 @@ Unlike standard job boards, Nerdo doesn't just show you a job you aren't ready f
   - Africa's Talking (for SMS notifications and alerts)
   - Safaricom Daraja (for M-Pesa payments)
 
+## Project Structure
+
+The project is organized into modular applications within the `nerdo_project/apps` directory:
+
+- **users**: Handles user authentication, profiles, and role management (Applicant vs. Employer).
+- **learning**: The core AI Learning Hub. Generates video roadmaps using Gemini AI and YouTube Data API.
+- **opportunities**: Manages job listings, applications, reminders, and employer dashboards.
+- **community**: A forum for users to share posts, like, and comment.
+- **billing**: Integrates M-Pesa for payment processing.
+
 ## Local Setup Instructions
 
 Follow these steps to run the project locally for development or grading.
@@ -44,8 +54,8 @@ Follow these steps to run the project locally for development or grading.
 ### Prerequisites
 
 - Python 3.8 or higher
-- MariaDB (or XAMPP/WAMP) running and accessible
 - Git installed
+- SQLite (Default for development) or MariaDB/PostgreSQL (for production)
 
 ### Installation
 
@@ -71,22 +81,40 @@ Follow these steps to run the project locally for development or grading.
 
 4. **Configure Environment Variables**
 
-Create a `.env` file in the root directory.
+   Create a `.env` file in the root directory.
 
-```env
-SECRET_KEY=django-insecure-dev-key-placeholder
-DEBUG=True
+   ```env
+   SECRET_KEY=django-insecure-dev-key-placeholder
+   DEBUG=True
 
-# Database
-DB_NAME=nerdo_db
-DB_USER=root
-DB_PASSWORD=
+   # Database (Defaults to SQLite if not set, or configure for MariaDB)
+   # DB_NAME=nerdo_db
+   # DB_USER=root
+   # DB_PASSWORD=
 
-# APIs (Leave blank for now)
-AFRICASTALKING_USERNAME=sandbox
-AFRICASTALKING_API_KEY=
-YOUTUBE_API_KEY=
-```
+   # Google Gemini AI (Required for Roadmaps)
+   GEMINI_API_KEY=your_gemini_api_key_here
+   # Cache timeout in seconds (default 24h)
+   CACHE_TIMEOUT=86400
+
+   # YouTube Data API (For fetching video content)
+   # Supports multiple keys for rotation to handle quota limits
+   YOUTUBE_API_KEY1=your_youtube_key_1
+   YOUTUBE_API_KEY2=your_youtube_key_2
+   YOUTUBE_API_KEY3=your_youtube_key_3
+
+   # Africa's Talking (For SMS Alerts)
+   AFRICASTALKING_USERNAME=sandbox
+   AFRICASTALKING_API_KEY=your_africas_talking_key
+
+   # M-Pesa Daraja API (For Payments)
+   MPESA_ENVIRONMENT=sandbox
+   MPESA_CONSUMER_KEY=your_mpesa_consumer_key
+   MPESA_CONSUMER_SECRET=your_mpesa_consumer_secret
+   MPESA_SHORTCODE=174379
+   MPESA_EXPRESS_SHORTCODE=174379
+   MPESA_PASSKEY=bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919
+   ```
 
 5. **Run Migrations**
 
@@ -134,8 +162,9 @@ If you find a bug, please create a GitHub Issue. Include:
 Have an idea for the AI Recommendation Engine or the Job Board? Open a Feature Request issue to discuss it before writing code.
 
 ## Author
-- [@7ever](https://github.com/7ever)  
-  
+
+- [@7ever](https://github.com/7ever)
+
 ## License
 
 Distributed under the MIT License. See [`LICENSE`](https://github.com/7ever/Nerdo.Africa/blob/main/LICENSE) file for more information.
