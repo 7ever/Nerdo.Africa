@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load crispy_forms_tags %}
+{% load static %}
 
 {% block content %}
 <div class="row justify-content-center align-items-center" style="min-height: 80vh;">
@@ -7,10 +8,8 @@
         <div class="card border-0 shadow-lg bg-glass overflow-hidden">
             <div class="card-body p-5">
                 <div class="text-center mb-4">
-                    <div class="bg-success text-white rounded-3 d-flex align-items-center justify-content-center shadow-lg mx-auto mb-3"
-                        style="width: 64px; height: 64px; background: linear-gradient(135deg, #10b981, #059669) !important;">
-                        <span class="fs-2 fw-bold">N</span>
-                    </div>
+                    <img src="{% static 'images/logo.png' %}" alt="Nerdo.Africa Logo" class="img-fluid mb-3 rounded-2"
+                        style="max-height: 50px; width: auto;">
                     <h3 class="fw-bold text-dark tracking-tight">Welcome Back</h3>
                     <p class="text-muted small">Sign in to continue your journey</p>
                 </div>
