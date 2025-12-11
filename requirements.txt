@@ -1,3 +1,4 @@
+africastalking==2.0.1
 annotated-types==0.7.0
 asgiref==3.10.0
 cachetools==6.2.2
