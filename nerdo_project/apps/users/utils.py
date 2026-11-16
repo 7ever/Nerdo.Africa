@@ -1,14 +1,12 @@
 import requests
-import random
-import urllib3
+import secrets
+import logging
 from django.conf import settings
 
-# Disable the annoying "InsecureRequestWarning" that appears when verify=False
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+logger = logging.getLogger(__name__)
 
 def generate_otp():
-    """Generates a crytographically secure 6-digit code."""
-    return str(random.randint(100000, 999999))
+    return str(secrets.randbelow(900000) + 100000)
 
 def send_sms(phone_number, message):
     """
@@ -52,27 +50,25 @@ def send_sms(phone_number, message):
     }
     
     try:
-        print(f"--> Sending Raw Request to Africa's Talking: {clean_phone}")
-        
-        # 5. Send the POST Request
-        response = requests.post(url, data=data, headers=headers, verify=False)
-        
-        # 6. Analyze the Response
+        logger.debug("Sending SMS to %s", clean_phone)
+
+        response = requests.post(url, data=data, headers=headers)
+
         if response.status_code == 201:
             response_data = response.json()
             recipients = response_data.get('SMSMessageData', {}).get('Recipients', [])
             if recipients and recipients[0]['status'] == 'Success':
-                print(f"--> SMS Success! Cost: {recipients[0]['cost']}")
+                logger.info("SMS sent successfully. Cost: %s", recipients[0]['cost'])
                 return True
             else:
-                print(f"--> API accepted request but delivery failed: {response.text}")
+                logger.warning("SMS API accepted but delivery failed: %s", response.text)
                 return False
         else:
-            print(f"--> SMS API Error ({response.status_code}): {response.text}")
+            logger.error("SMS API error %s: %s", response.status_code, response.text)
             return False
-            
+
     except Exception as e:
-        print(f"--> CRITICAL SMS ERROR: {str(e)}")
+        logger.error("SMS send failed: %s", e)
         return False
 
 def send_otp_sms(phone_number, otp):

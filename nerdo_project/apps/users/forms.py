@@ -172,11 +172,7 @@ class EmployerProfileUpdateForm(forms.ModelForm):
             profile.user.save()
         return profile
 
-# 2. Form for Requesting the Reset (Enter Phone)
-class PasswordResetRequestForm(forms.Form):
-    phone_number = forms.CharField(max_length=15, label="Enter Registered Phone Number")
-
-# 3. Form for Verifying OTP
+# Form for Verifying OTP
 class OTPVerifyForm(forms.Form):
     otp_code = forms.CharField(
         max_length=6, 

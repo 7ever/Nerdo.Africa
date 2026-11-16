@@ -15,7 +15,7 @@ class Profile(models.Model):
 
     # Identity
     ajira_id = models.CharField(max_length=20, blank=True, help_text="e.g., AJ-123456")
-    phone_number = models.CharField(max_length=15, blank=True)
+    phone_number = models.CharField(max_length=15, blank=True, unique=True, null=True)
     
     # Profile Data
     avatar = models.ImageField(upload_to='avatars/', blank=True, null=True)
@@ -30,7 +30,7 @@ class Profile(models.Model):
 
     # NEW: OTP Fields
     otp_code = models.CharField(max_length=6, blank=True, null=True)
-    otp_created_at = models.DateTimeField(auto_now=True)
+    otp_created_at = models.DateTimeField(null=True, blank=True)
 
     # Status Flags
     is_verified = models.BooleanField(default=False) 
