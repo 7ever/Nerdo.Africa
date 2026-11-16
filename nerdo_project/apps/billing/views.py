@@ -4,11 +4,14 @@ from django.contrib import messages
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.models import User
-from django.conf import settings # Import settings to debug keys
+from django.conf import settings
 from django_daraja.mpesa.core import MpesaClient
 from .models import MpesaTransaction
 from .forms import PaymentForm
 import json
+import logging
+
+logger = logging.getLogger(__name__)
 
 @login_required
 def pay_premium(request):
@@ -34,23 +37,19 @@ def pay_premium(request):
             print(f"Consumer Key Loaded? {'Yes' if settings.MPESA_CONSUMER_KEY else 'NO (Check .env)'}")
             
             amount = 130
-            # Sanitize Account Reference (Removes spaces, limit to 12 chars)
             clean_username = request.user.username.replace(' ', '')
             account_reference = f'Nerdo_{clean_username}'[:12]
-            transaction_desc = 'PremiumVerification' # No spaces to be safe
-            
-            callback_url = 'http://mysite.com/billing/callback' 
+            transaction_desc = 'PremiumVerification'
+
+            callback_url = settings.MPESA_CALLBACK_URL
 
             cl = MpesaClient()
             try:
-                # 4. INITIATE STK PUSH
-                print(f"Sending request to Safaricom...")
+                logger.debug("Initiating M-Pesa STK Push for user %s", request.user.username)
                 response = cl.stk_push(phone_number, amount, account_reference, transaction_desc, callback_url)
-                
-                print(f"Safaricom Response Code: {response.response_code}")
-                print(f"Safaricom Description: {response.response_description}")
 
-                # Check if the push was successfully sent (Response Code '0')
+                logger.debug("Safaricom response: %s — %s", response.response_code, response.response_description)
+
                 if response.response_code == '0':
                     MpesaTransaction.objects.create(
                         user=request.user,
@@ -63,11 +62,10 @@ def pay_premium(request):
                     messages.success(request, f"STK Push sent to {phone_number}. Check your phone!")
                     return redirect('profile')
                 else:
-                    # Show the actual error from Safaricom to the user
                     messages.error(request, f"M-Pesa Failed: {response.response_description}")
 
             except Exception as e:
-                print(f"EXCEPTION: {str(e)}")
+                logger.error("M-Pesa STK Push error: %s", e)
                 messages.error(request, f"System Error: {str(e)}")
                 
     else:
@@ -86,9 +84,8 @@ def mpesa_callback(request):
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
-            # Log callback data to terminal to confirm reception
-            print(f"CALLBACK DATA: {data}")
-            
+            logger.info("M-Pesa callback received")
+
             stk_callback = data.get('Body', {}).get('stkCallback', {})
             checkout_request_id = stk_callback.get('CheckoutRequestID')
             result_code = stk_callback.get('ResultCode')
@@ -114,7 +111,7 @@ def mpesa_callback(request):
 
             return JsonResponse({"result": "ok"})
         except Exception as e:
-            print(f"Callback Error: {e}")
+            logger.error("M-Pesa callback error: %s", e)
             return JsonResponse({"result": "error"})
 
     return JsonResponse({"result": "ok"})

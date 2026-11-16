@@ -7,12 +7,15 @@ from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
 from django import forms
 from django.db.models import Q
+from django.utils import timezone
+from datetime import timedelta
 from .forms import UserRegisterForm, OTPVerifyForm, ProfileUpdateForm, EmployerProfileUpdateForm
 from .models import Profile
-from apps.opportunities.models import Job, Application 
+from apps.opportunities.models import Job, Application
 from .utils import generate_otp, send_otp_sms
-import random
 from django.db.models import Count
+
+OTP_EXPIRY_MINUTES = 10
 
 # === LOCAL FORMS FOR PASSWORD RESET FLOW ===
 class IdentifyUserForm(forms.Form):
@@ -60,7 +63,8 @@ def register(request):
                 return render(request, 'users/register.html', {'form': form})
 
             otp = generate_otp()
-            
+            request.session['reg_otp_created_at'] = timezone.now().isoformat()
+
             request.session['reg_data'] = {
                 'username': username,
                 'email': email,
@@ -90,12 +94,22 @@ def verify_otp(request):
     if not reg_data or not reg_otp:
         messages.error(request, "Session expired. Please sign up again.")
         return redirect('register')
-    
+
     if request.method == 'POST':
         form = OTPVerifyForm(request.POST)
         if form.is_valid():
             code = form.cleaned_data['otp_code']
-            
+
+            # Check OTP expiry
+            otp_created_str = request.session.get('reg_otp_created_at')
+            if otp_created_str:
+                otp_created = timezone.datetime.fromisoformat(otp_created_str)
+                if timezone.is_naive(otp_created):
+                    otp_created = timezone.make_aware(otp_created)
+                if timezone.now() - otp_created > timedelta(minutes=OTP_EXPIRY_MINUTES):
+                    messages.error(request, "Verification code expired. Please register again.")
+                    return redirect('register')
+
             if code == reg_otp:
                 try:
                     # Create User with First/Last Name
@@ -266,7 +280,11 @@ def password_reset_request(request):
         if not user_id:
             return redirect('password_reset')
             
-        user = User.objects.get(id=user_id)
+        try:
+            user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            messages.error(request, "Session expired. Please start over.")
+            return redirect('password_reset')
         real_phone = user.profile.phone_number
         
         # Mask the phone number (e.g., *********1234)
@@ -281,6 +299,7 @@ def password_reset_request(request):
                 if input_phone.strip() == real_phone.strip():
                     otp = generate_otp()
                     user.profile.otp_code = otp
+                    user.profile.otp_created_at = timezone.now()
                     user.profile.save()
                     
                     # Removed debug prints here
@@ -323,7 +342,11 @@ def password_reset_verify(request):
                 profile = Profile.objects.get(phone_number=phone)
                 
                 if profile.otp_code == code:
-                    profile.otp_code = None 
+                    if profile.otp_created_at and timezone.now() - profile.otp_created_at > timedelta(minutes=OTP_EXPIRY_MINUTES):
+                        messages.error(request, "OTP expired. Please request a new one.")
+                        return redirect('password_reset')
+                    profile.otp_code = None
+                    profile.otp_created_at = None
                     profile.save()
                     
                     request.session['reset_user_id'] = profile.user.id
@@ -342,8 +365,12 @@ def password_reset_confirm(request):
     if not user_id:
         messages.error(request, "Unauthorized. Please verify OTP first.")
         return redirect('password_reset')
-        
-    user = User.objects.get(id=user_id)
+
+    try:
+        user = User.objects.get(id=user_id)
+    except User.DoesNotExist:
+        messages.error(request, "Session expired. Please start over.")
+        return redirect('password_reset')
     
     if request.method == 'POST':
         form = SetPasswordForm(user, request.POST)

@@ -152,7 +152,8 @@ def quick_search(request, topic):
         return redirect('roadmap_view_id', path_id=existing.id)
 
     from django.urls import reverse
-    url = reverse('roadmap_view') + f'?topic={topic}&level=beginner&duration=12'
+    from django.utils.http import urlencode
+    url = reverse('roadmap_view') + '?' + urlencode({'topic': topic, 'level': 'beginner', 'duration': 12})
     return redirect(url)
 
 @login_required
